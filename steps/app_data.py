@@ -1,4 +1,5 @@
 from scapy.all import Packet, Raw
+from algo.black_marker import black_marker
 
 """
   Esse passo anonimiza os dados da camada de aplicação.
@@ -14,6 +15,6 @@ from scapy.all import Packet, Raw
 def anon_app_data(packet: Packet) -> Packet:
     if Raw in packet:
       payload_length = len(packet[Raw].load)
-      packet[Raw].load = b"\x00"
+      packet[Raw].load = black_marker(payload_length)
     return packet
  
