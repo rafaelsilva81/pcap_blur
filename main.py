@@ -1,14 +1,18 @@
 from scapy.all import Packet, rdpcap, wrpcap
 
 from steps.app_data import anon_app_data 
-from steps.timestamps import anon_timestamp
+
 from steps.checksum import recalculate
+
+from steps.timestamps import anon_timestamps
 
 
 def anonymize_pcap(packet: Packet) -> Packet:
   packet = anon_app_data(packet)
+  packet = anon_timestamps(packet)
   packet = recalculate(packet)
-  packet = anon_timestamp(packet)
+  
+
   return packet
   
   
