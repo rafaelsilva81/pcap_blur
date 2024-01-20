@@ -8,10 +8,13 @@ from steps.timestamps import anon_timestamps
 
 from steps.port_numbers import anon_port_numbers
 
+from steps.mac_address import anon_mac_address
+
 def anonymize_pcap(packet: Packet) -> Packet:
   packet = anon_app_data(packet)
   packet = anon_timestamps(packet)
   packet = anon_port_numbers(packet)
+  packet = anon_mac_address(packet)
   packet = recalculate(packet)
   
 
