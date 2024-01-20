@@ -6,10 +6,12 @@ from steps.checksum import recalculate
 
 from steps.timestamps import anon_timestamps
 
+from steps.port_numbers import anon_port_numbers
 
 def anonymize_pcap(packet: Packet) -> Packet:
   packet = anon_app_data(packet)
   packet = anon_timestamps(packet)
+  packet = anon_port_numbers(packet)
   packet = recalculate(packet)
   
 
