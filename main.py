@@ -1,4 +1,4 @@
-from scapy.all import Packet, rdpcap, wrpcap
+from scapy.all import Packet, rdpcap, wrpcap, IP
 
 from steps.app_data import anon_app_data 
 
@@ -10,13 +10,16 @@ from steps.port_numbers import anon_port_numbers
 
 from steps.mac_address import anon_mac_address
 
+from steps.ip_address import anon_ip_address
+
 def anonymize_pcap(packet: Packet) -> Packet:
   packet = anon_app_data(packet)
   packet = anon_timestamps(packet)
   packet = anon_port_numbers(packet)
   packet = anon_mac_address(packet)
   packet = recalculate(packet)
-  
+  packet = anon_ip_address(packet)
+
 
   return packet
   
