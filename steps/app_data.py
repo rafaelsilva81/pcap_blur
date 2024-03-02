@@ -1,5 +1,8 @@
 from scapy.all import Packet, Raw
-from algo.black_marker import black_marker
+
+
+def black_marker(lenght: int) -> bytes:
+  return b"\x00" * lenght
 
 """
   Esse passo anonimiza os dados da camada de aplicação.
