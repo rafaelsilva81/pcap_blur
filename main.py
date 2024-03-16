@@ -25,7 +25,7 @@ def anonymize_pcap(packet: Packet) -> Packet:
 def main():
   logging.basicConfig(filename='log.txt',filemode='w', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s',datefmt='%Y-%m-%d%H:%M:%S')
   
-  path = "input.pcap"
+  path = "forged.pcap"
 
   if os.path.exists(path):
     file_size = os.path.getsize(path)  # Size of packet trace in bytes
@@ -38,7 +38,9 @@ def main():
     logging.info(f"Node/Host name: {platform.node()}")
         
     anonymized_packets = [anonymize_pcap(packet) for packet in packets]
-    wrpcap("output.pcap", anonymized_packets)
+    file_name = path.replace(".pcap", "_out.pcap")
+    wrpcap(file_name, anonymized_packets)
+
   else:
     logging.error(f"File not found: {path} - Please check the file path and try again.")
 
