@@ -1,0 +1,5 @@
+pycryptodome==3.20.0
+scapy==2.5.0
+tzdata==2024.1
+tzlocal==5.2
+yacryptopan==1.0.1

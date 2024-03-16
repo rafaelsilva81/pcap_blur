@@ -12,3 +12,4 @@ def anon_ip_address(packet: Packet) -> Packet:
         packet[IP].src = cp.anonymize(packet[IP].src)
         packet[IP].dst = cp.anonymize(packet[IP].dst)
     return packet
+
