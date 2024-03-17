@@ -1,4 +1,4 @@
-2024-03-0915:45:24 - INFO - Original file: forged.pcap - 17478 bytes - 123 packets
-2024-03-0915:45:24 - INFO - Machine information: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD - Windows-10-10.0.19045-SP0 - 64bit
-2024-03-0915:45:24 - INFO - Node/Host name: DESKTOP-V4VVDSM
-2024-03-0915:45:24 - DEBUG - Looking up time zone info from registry
+2024-03-16 17:25:51 - INFO - Original file: forged.pcap - 17478 bytes - 123 packets
+2024-03-16 17:25:51 - INFO - Machine information: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD - Windows-10-10.0.19045-SP0 - 64bit
+2024-03-16 17:25:51 - INFO - Node/Host name: DESKTOP-V4VVDSM
+2024-03-16 17:25:51 - DEBUG - Looking up time zone info from registry
