@@ -1,6 +1,9 @@
 from scapy.all import rdpcap, IP, IPv6, Ether
 import sys
 import logging
+from datetime import datetime, timezone
+import tzlocal
+
 
 def validate_anonymization(original_pcap_path, anonymized_pcap_path):
     # Read packets from the provided pcap files
