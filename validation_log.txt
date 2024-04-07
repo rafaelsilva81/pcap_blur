@@ -1,1 +1,2 @@
-2024-03-17 14:12:58 - INFO - Validating anonymization for test.pcap and test_out.pcap
+2024-03-24 15:41:03 - INFO - Validating anonymization for test.pcap and test_out.pcap
+2024-03-24 15:41:07 - INFO - Anonymization successful. No original information was found in the anonymized packets.
