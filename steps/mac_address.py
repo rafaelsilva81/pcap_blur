@@ -1,4 +1,5 @@
-from scapy.all import Packet, Ether
+from scapy.all import Packet
+from scapy.layers.l2 import Ether
 import random
 from typing import Dict, Tuple
 

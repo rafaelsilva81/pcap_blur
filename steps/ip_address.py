@@ -1,4 +1,6 @@
-from scapy.all import Packet, IP, IPv6
+from scapy.all import Packet
+from scapy.layers.inet import IP
+from scapy.layers.inet6 import IPv6
 from yacryptopan import CryptoPAn
 import os
 

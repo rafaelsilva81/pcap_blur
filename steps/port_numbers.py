@@ -1,4 +1,5 @@
-from scapy.all import Packet, IP, TCP, UDP
+from scapy.all import Packet
+from scapy.layers.inet import IP, TCP, UDP
 import random
 from typing import Dict
 

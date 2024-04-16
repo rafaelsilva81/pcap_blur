@@ -1,7 +1,9 @@
 # steps/__init__.py
 
-from .check_checksum import check_checksum
+from .utils import check_checksum, is_truncated, extract_metadata
 
 __all__ = [
-    "check_checksum"
+    "check_checksum",
+    "is_truncated",
+    "extract_metadata"
 ]

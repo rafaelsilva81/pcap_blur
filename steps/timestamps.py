@@ -1,27 +1,25 @@
 from scapy.all import Packet
+from scapy.utils import EDecimal
 from datetime import datetime, timezone
 import tzlocal
 
-def precision_degradation(timestamp: float) -> float:
-    # Não é necessário converter de EDecimal para float, assumindo que o input já é float
-
-    # Obtém o fuso horário local do sistema operacional
+def precision_degradation(timestamp: EDecimal) -> float:
+    # Converter o timestamp EDecimal para float
+    timestamp_float = float(timestamp)
+  
     local_tz = tzlocal.get_localzone()
 
-    # Converte o timestamp Unix para um objeto datetime em UTC
-    timestamp_datetime = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+    timestamp_datetime = datetime.fromtimestamp(timestamp_float, tz=timezone.utc)
 
-    # Converte para o fuso horário local
     timestamp_datetime_local = timestamp_datetime.astimezone(local_tz)
 
-    # Zera minutos e segundos
     degraded_datetime_local = timestamp_datetime_local.replace(minute=0, second=0, microsecond=0)
 
-    # Converte de volta para UTC
     degraded_datetime_utc = degraded_datetime_local.astimezone(timezone.utc)
 
-    # Retorna o timestamp Unix modificado
-    return degraded_datetime_utc.timestamp()
+    degraded_edecimal = EDecimal(degraded_datetime_utc.timestamp())
+    return degraded_edecimal
+
 
 def anon_timestamps(packet: Packet) -> Packet:
     degraded_ts = precision_degradation(packet.time)
