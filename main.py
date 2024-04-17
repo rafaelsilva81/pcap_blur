@@ -16,17 +16,17 @@ from utils import configure_cryptopan, configure_logging
 
 
 def anonymize_pcap(packet: Packet, index: int) -> Packet:
-    copy_packet = packet.copy()
+    pkt = packet.copy()
 
     # packet.show2()
     # packet = anon_timestamps(packet)
-    copy_packet = anon_port_numbers(packet)
-    copy_packet = anon_mac_address(packet)
-    copy_packet = anon_ip_address(packet)
-    copy_packet = anon_app_data(packet)
-    copy_packet = recalculate(packet, index)
+    pkt = anon_port_numbers(packet)
+    pkt = anon_mac_address(packet)
+    pkt = anon_ip_address(packet)
+    pkt = anon_app_data(packet)
+    pkt = recalculate(packet, index)
 
-    return copy_packet
+    return pkt
 
 
 def main(path):
@@ -49,6 +49,8 @@ def main(path):
     anonymized_packets = []
     with PcapReader(path) as packets:
         for index, packet in enumerate(packets):
+            if index > 100:
+                break  # TODO remove this
             # Anonymize and append packet
             print(f"Processing packet {packet.summary()}")
 

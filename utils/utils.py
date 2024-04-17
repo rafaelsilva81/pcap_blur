@@ -45,3 +45,9 @@ def configure_logging(original_filename: str) -> None:
         format="%(asctime)s - %(levelname)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+
+def get_cryptopan() -> CryptoPAn:
+    if cryptopan is None:
+        raise Exception("CryptoPAn not configured")
+    return cryptopan
