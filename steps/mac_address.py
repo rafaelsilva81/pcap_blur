@@ -1,7 +1,7 @@
 from scapy.all import Packet
 from scapy.layers.l2 import Ether
 import random
-from typing import Dict, Tuple
+from typing import Dict
 
 # Mapeamentos para identificadores de fabricante e de dispositivo
 fabricante_map: Dict[str, str] = {}

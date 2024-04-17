@@ -1,7 +1,12 @@
-from scapy.all import IP, TCP, Packet, UDP
 import logging
-from typing import Union, List, Dict
-import pyshark
+
+from scapy.all import Packet
+from scapy.layers.inet import IP, TCP
+from scapy.layers.inet6 import IPv6
+from yacryptopan import CryptoPAn
+
+cryptopan: CryptoPAn | None = None
+
 
 def check_checksum(packet: Packet):
     # Validar se o checksum do pacote é válido
@@ -11,8 +16,14 @@ def check_checksum(packet: Packet):
         new_checksum = packet[IP].chksum
         if original_checksum != new_checksum:
             logging.warning(f"IP Checksum Invalid for package {packet.summary()}")
-       
-    
+
+    if packet.haslayer(IPv6):
+        original_checksum = packet[IPv6].chksum
+        del packet[IPv6].chksum
+        new_checksum = packet[IPv6].chksum
+        if original_checksum != new_checksum:
+            logging.warning(f"IPv6 Checksum Invalid for package {packet.summary()}")
+
     if packet.haslayer(TCP):
         original_checksum = packet[TCP].chksum
         del packet[TCP].chksum
@@ -20,29 +31,17 @@ def check_checksum(packet: Packet):
         if original_checksum != new_checksum:
             logging.warning(f"TCP Checksum Invalid for package {packet.summary()}")
 
-def is_truncated(packet: Packet) -> bool:
 
-    # if IP in packet and UDP in packet:
-    #     ip_len = packet[IP].len
-    #     actual_len = len(packet[IP].payload)
-    #     return ip_len > actual_len
-    if IP in packet:
-        ip_len = packet[IP].len
-        actual_len = len(packet[IP].payload)
-        return ip_len > actual_len
-    if UDP in packet:
-        ip_len = packet[UDP].len
-        actual_len = len(packet[UDP].payload)
-        return ip_len > actual_len
-    return False
+def configure_cryptopan(key: bytes) -> None:
+    global cryptopan
+    cryptopan = CryptoPAn(key)
 
-def extract_metadata(pcap_file: str, index: int) -> List[Dict[str,str]]:
-    capture = pyshark.FileCapture(pcap_file, only_summaries=True)
-    metadata_list: List[Dict[str,str]] = []
-    # obter o pacote de acordo com o index
-    packet = capture[index]
 
-    print(f"packet: {packet}")
-    print(f"info: {packet.info}")
-    capture.close()
-    return metadata_list
+def configure_logging(original_filename: str) -> None:
+    logging.basicConfig(
+        filename=f"output/{original_filename}_log.txt",
+        filemode="w",
+        level=logging.DEBUG,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )

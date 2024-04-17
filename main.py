@@ -1,81 +1,75 @@
-import logging
+import logging as log
 import os
 import platform
 import sys
-from scapy.all import Packet, Raw, wrpcap, PcapReader
-from scapy.layers.l2 import Ether
-from scapy.layers.inet import IP, TCP, UDP
-from scapy.layers.inet6 import IPv6
-import time
 
-from steps import anon_app_data, recalculate, anon_timestamps, anon_port_numbers, anon_mac_address, anon_ip_address
-from utils import check_checksum, is_truncated, extract_metadata
+from scapy.all import Packet, PcapReader, wrpcap
+
+from steps import (
+    anon_app_data,
+    anon_ip_address,
+    anon_mac_address,
+    anon_port_numbers,
+    recalculate,
+)
+from utils import configure_cryptopan, configure_logging
+
 
 def anonymize_pcap(packet: Packet, index: int) -> Packet:
-  copy_packet = packet.copy()
+    copy_packet = packet.copy()
 
-  
-  #packet.show2()
-  # packet = anon_timestamps(packet)
-  copy_packet = anon_port_numbers(packet)
-  copy_packet = anon_mac_address(packet)
-  copy_packet = anon_ip_address(packet)
-  copy_packet = anon_app_data(packet)
-  copy_packet = recalculate(packet, index)
+    # packet.show2()
+    # packet = anon_timestamps(packet)
+    copy_packet = anon_port_numbers(packet)
+    copy_packet = anon_mac_address(packet)
+    copy_packet = anon_ip_address(packet)
+    copy_packet = anon_app_data(packet)
+    copy_packet = recalculate(packet, index)
 
-  return copy_packet
-   
+    return copy_packet
+
+
 def main(path):
-    start_time = time.time()
+    configure_logging(os.path.basename(path))
+    key = os.urandom(32)
+    configure_cryptopan(key)
 
-    logging.basicConfig(filename='log.txt', filemode='w', level=logging.DEBUG,
-                        format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    file_size = os.path.getsize(path)  # Size of packet trace in bytes
 
-    if os.path.exists(path):
-      file_size = os.path.getsize(path)  # Size of packet trace in bytes
-        
-      # Initialize progress tracking
-      packet_count = 0
- 
-      # Log initial details
-      logging.info(f"Original file: {os.path.basename(path)} - {file_size} bytes")
-      logging.info(f"Machine information: {platform.processor()} - {platform.platform()} - {platform.architecture()[0]}")
-      logging.info(f"Node/Host name: {platform.node()}")
+    # Initialize progress tracking
+    packet_count = 0
 
-      
-      anonymized_packets = []
-      with PcapReader(path) as packets:
+    # Log initial details
+    log.info(f"Original file: {os.path.basename(path)} - {file_size} bytes")
+    log.info(
+        f"Machine information: {platform.processor()} - {platform.platform()} - {platform.architecture()[0]}"
+    )
+    log.info(f"Node/Host name: {platform.node()}")
+
+    anonymized_packets = []
+    with PcapReader(path) as packets:
         for index, packet in enumerate(packets):
-          if (index > 10):
-             break
-          # Anonymize and append packet
-          print(f"Processing packet {packet.summary()}")
-          
-          modified_packet = anonymize_pcap(packet.copy(), index+1)
-          # if is_truncated(modified_packet):
-          #   logging.warning(f"Packet {index+1} was truncated")
-          anonymized_packets.append(modified_packet)
-          packet_count += 1
+            # Anonymize and append packet
+            print(f"Processing packet {packet.summary()}")
 
-          # Progress update  logic here (adjust as needed)
-          print(f"Processed {packet_count} packets")
-      # Save the anonymized packets to a new file
-      file_name = path.replace(".pcap", "_out.pcap")
-      wrpcap(file_name, anonymized_packets)
-      print(f"\nAnonymized file saved to {file_name}")
+            modified_packet = anonymize_pcap(packet.copy(), index + 1)
+            anonymized_packets.append(modified_packet)
+            packet_count += 1
 
-    else:
-        logging.error(f"File not found: {path} - Please check the file path and try again.")
+            # Progress update  logic here (adjust as needed)
+            print(f"Processed {packet_count} packets")
+            # Save the anonymized packets to a new file
+            file_name = path.replace(".pcap", "_out.pcap")
+            wrpcap(f"output/{file_name}", anonymized_packets)
+            print(f"\nAnonymized file saved to {file_name}")
 
-    end_time = time.time()
-    logging.info(f"Time taken in seconds: {end_time - start_time}")
 
-    
 if __name__ == "__main__":
     file_path = sys.argv[1]
-    # max_memory = int(sys.argv[2])
 
     if os.path.exists(file_path):
         main(file_path)
     else:
-        logging.error(f"File not found: {file_path} - Please check the file path and try again.")
+        print(
+            f"File not found: {file_path} - Please check the file path and try again."
+        )
