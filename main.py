@@ -20,11 +20,11 @@ def anonymize_pcap(packet: Packet, index: int) -> Packet:
 
     # packet.show2()
     # packet = anon_timestamps(packet)
-    pkt = anon_port_numbers(packet)
-    pkt = anon_mac_address(packet)
-    pkt = anon_ip_address(packet)
-    pkt = anon_app_data(packet)
-    pkt = recalculate(packet, index)
+    pkt = anon_port_numbers(pkt)
+    pkt = anon_mac_address(pkt)
+    pkt = anon_ip_address(pkt)
+    pkt = anon_app_data(pkt)
+    pkt = recalculate(pkt, index)
 
     return pkt
 
@@ -50,7 +50,7 @@ def main(path):
     with PcapReader(path) as packets:
         for index, packet in enumerate(packets):
             if index > 100:
-                break  # TODO remove this
+                break
             # Anonymize and append packet
             print(f"Processing packet {packet.summary()}")
 

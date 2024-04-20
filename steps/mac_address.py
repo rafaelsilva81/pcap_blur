@@ -1,11 +1,13 @@
-from scapy.all import Packet
-from scapy.layers.l2 import Ether
 import random
 from typing import Dict
+
+from scapy.all import Packet
+from scapy.layers.l2 import ARP, Ether
 
 # Mapeamentos para identificadores de fabricante e de dispositivo
 fabricante_map: Dict[str, str] = {}
 dispositivo_map: Dict[str, str] = {}
+
 
 def gera_permutacao_mac(mac_part: str, mac_map: Dict[str, str]) -> str:
     """
@@ -19,11 +21,15 @@ def gera_permutacao_mac(mac_part: str, mac_map: Dict[str, str]) -> str:
         return mac_map[mac_part]
     else:
         # Gerar permutação aleatória
-        permuted_part = ':'.join(['%02x' % random.randint(0, 255) for _ in range(3)])
+        # Evita colocar 1
+        permuted_part = ":".join(["%02x" % random.randint(0, 255) for _ in range(3)])
         while permuted_part in mac_map.values():
-            permuted_part = ':'.join(['%02x' % random.randint(0, 255) for _ in range(3)])
+            permuted_part = ":".join(
+                ["%02x" % random.randint(0, 255) for _ in range(3)]
+            )
         mac_map[mac_part] = permuted_part
         return permuted_part
+
 
 def anon_mac_address(packet: Packet) -> Packet:
     """
@@ -40,11 +46,22 @@ def anon_mac_address(packet: Packet) -> Packet:
         fabricante_dst, dispositivo_dst = mac_dst[:8], mac_dst[9:]
 
         # Aplicar permutação
-        mac_src_anon = gera_permutacao_mac(fabricante_src, fabricante_map) + ":" + gera_permutacao_mac(dispositivo_src, dispositivo_map)
-        mac_dst_anon = gera_permutacao_mac(fabricante_dst, fabricante_map) + ":" + gera_permutacao_mac(dispositivo_dst, dispositivo_map)
+        mac_src_anon = (
+            gera_permutacao_mac(fabricante_src, fabricante_map)
+            + ":"
+            + gera_permutacao_mac(dispositivo_src, dispositivo_map)
+        )
+        mac_dst_anon = (
+            gera_permutacao_mac(fabricante_dst, fabricante_map)
+            + ":"
+            + gera_permutacao_mac(dispositivo_dst, dispositivo_map)
+        )
 
         # Definir endereços MAC anonimizados no pacote
         packet[Ether].src = mac_src_anon
         packet[Ether].dst = mac_dst_anon
 
+        if packet.haslayer(ARP):
+            packet[ARP].hwsrc = mac_src_anon
+            packet[ARP].hwdst = mac_dst_anon
     return packet

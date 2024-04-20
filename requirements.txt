@@ -6,7 +6,6 @@ pefile==2023.2.7
 pycryptodome==3.20.0
 pyinstaller==6.5.0
 pyinstaller-hooks-contrib==2024.3
-pyshark==0.6
 pytz==2024.1
 pywin32-ctypes==0.2.2
 scapy==2.5.0
