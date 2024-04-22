@@ -49,7 +49,7 @@ def main(path):
     anonymized_packets = []
     with PcapReader(path) as packets:
         for index, packet in enumerate(packets):
-            if index > 100:
+            if index > 500:
                 break
             # Anonymize and append packet
             print(f"Processing packet {packet.summary()}")
@@ -61,9 +61,9 @@ def main(path):
             # Progress update  logic here (adjust as needed)
             print(f"Processed {packet_count} packets")
             # Save the anonymized packets to a new file
-            file_name = path.replace(".pcap", "_out.pcap")
-            wrpcap(f"output/{file_name}", anonymized_packets)
-            print(f"\nAnonymized file saved to {file_name}")
+    file_name = path.replace(".pcap", "_out.pcap")
+    wrpcap(f"output/{file_name}", anonymized_packets)
+    print(f"\nAnonymized file saved to {file_name}")
 
 
 if __name__ == "__main__":

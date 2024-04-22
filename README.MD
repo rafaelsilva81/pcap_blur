@@ -3,7 +3,8 @@
 Problemas/Melhorias:
 
 - [ ] Melhorar output para TLS/SSL
-- [ ] Problemas com Scanners
+- [ ] Endereços MAC saindo como endereços de grupo e outros
 - [x] Pacotes ARP vazando os endereços IP originais
-- [ ] Pacotes IGMP malformados na saida
+- [x] Pacotes IGMP malformados na saida
+- [ ] Reestruturar o código para tornar mais modular
 - [ ] Pacotes ICMP/ICMPv6 malformados na saida

@@ -1,30 +1,19 @@
 import logging
 
-import scapy.layers.inet6 as inet6
 from scapy.all import Packet
+from scapy.contrib.igmp import IGMP
+from scapy.contrib.igmpv3 import IGMPv3
 from scapy.layers.inet import IP, TCP, UDP
-
-"""
-  Esse passo recalcula os checksums dos pacotes.
-"""
-
-
-def recalculate_icmpv6_checksum(packet: Packet, index: int) -> Packet:
-    pkt = packet.copy()
-    if packet.haslayer(inet6.ICMPv6ND_RA):
-        packet.show2()
-        del pkt[inet6.ICMPv6ND_RA].chksum
-    return pkt
-    # for layer in pkt.layers():
-    #     if issubclass(layer, inet6._ICMPv6):
-    #         la = layer()
-    #         del pkt[la].chksum
-    #         # also tried: del layer.chksum
-
-    # return pkt
 
 
 def recalculate(packet: Packet, index: int) -> Packet:
+    """
+    This function recalculates the checksums of the packets.
+
+    :param packet: Scapy Packet to be processed.
+    :param index: Index of the packet in the packet list (for logging purposes).
+    :return: Anonymized packet.
+    """
     try:
         if packet.haslayer(IP):
             del packet[IP].chksum
@@ -35,11 +24,14 @@ def recalculate(packet: Packet, index: int) -> Packet:
                 )
                 del packet[IP].len
 
-        if packet.haslayer(inet6.IPv6):
-            recalculate_icmpv6_checksum(packet, index)
-
         if packet.haslayer(TCP):
             del packet[TCP].chksum
+
+        if packet.haslayer(IGMP):
+            del packet[IGMP].chksum
+
+        if packet.haslayer(IGMPv3):
+            del packet[IGMPv3].chksum
 
         if packet.haslayer(UDP):
             del packet[UDP].chksum  # pacotes UDP podem ter checksums

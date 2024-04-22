@@ -9,6 +9,16 @@ from utils import get_cryptopan
 
 
 def anon_ip_address(packet: Packet) -> Packet | None:
+    """
+    Anonimize the IP address of a packet.
+    This function also checks for ARP packets and anonymizes the source and destination IP addresses to avoid
+    leaking original information on ARP packets.
+
+    The anonymization process utilizes the CryptoPAn algorithm to generate a randomized IP address in a prefix-preserving manner.
+
+    :param packet: Scapy Packet to be processed.
+    :return: Anonymized packet.
+    """
     try:
         cp = get_cryptopan()
         if cp is None:

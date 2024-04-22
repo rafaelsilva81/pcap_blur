@@ -4,29 +4,29 @@ from typing import Dict
 from scapy.all import Packet
 from scapy.layers.inet import IP, TCP, UDP
 
-# Mapeamento de portas originais para portas permutadas
+# Original port number to permuted port number mapping
 port_map: Dict[int, int] = {}
 
 
 def create_port_permutation(port: int) -> int:
     """
-    Cria uma permutação de porta, garantindo que cada porta original seja mapeada
-    para uma única porta permutada.
+    This function creates a permutation of a port, ensuring that each original port is mapped to a unique permuted port.
 
-    :param port: Porta original.
-    :return: Porta permutada.
+    :param port: Original port number.
+    :return: Permuted port number.
     """
-    # Verificar se a porta já tem uma permutação
+
+    # Check if the port has a permutation
     if port in port_map:
         return port_map[port]
     else:
-        # Gerar uma permutação aleatória para a porta
+        # Generate a random permutation for the port
         permuted_port = random.randint(0, 65535)
         while permuted_port in port_map.values():
-            # Se a permutação já existir, gerar outra
+            # If the permutation already exists, generate another
             permuted_port = random.randint(0, 65535)
 
-        # Adicionar a permutação ao dicionário
+        # Add the permutation to the dictionary
         port_map[port] = permuted_port
 
     return permuted_port
@@ -34,9 +34,10 @@ def create_port_permutation(port: int) -> int:
 
 def anon_port_numbers(packet: Packet) -> Packet:
     """
-    Processa um pacote Scapy, aplicando permutação de porta se for um pacote TCP/IP.
+    Processes a packet Scapy, applying port permutation if it is a TCP or UDP packet.
 
-    :param packet: Pacote a ser processado.
+    :param packet: Scapy Packet to be processed.
+    :return: Anonymized packet.
     """
 
     if packet.haslayer(IP):

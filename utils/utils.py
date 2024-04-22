@@ -5,11 +5,17 @@ from scapy.layers.inet import IP, TCP
 from scapy.layers.inet6 import IPv6
 from yacryptopan import CryptoPAn
 
+# Global cryptopan initialization
 cryptopan: CryptoPAn | None = None
 
 
 def check_checksum(packet: Packet):
-    # Validar se o checksum do pacote é válido
+    """
+    This function checks if the checksum of a packet is valid.
+
+    :param packet: Scapy Packet to be processed.
+    :return: None
+    """
     if packet.haslayer(IP):
         original_checksum = packet[IP].chksum
         del packet[IP].chksum
@@ -33,11 +39,23 @@ def check_checksum(packet: Packet):
 
 
 def configure_cryptopan(key: bytes) -> None:
+    """
+    This function configures the CryptoPAN algorithm with the provided key.
+
+    :param key: Key to be used for the CryptoPAN algorithm.
+    :return: None
+    """
     global cryptopan
     cryptopan = CryptoPAn(key)
 
 
 def configure_logging(original_filename: str) -> None:
+    """
+    This function configures the logging for the original file using the logging module.
+
+    :param original_filename: Original file name.
+    :return: None
+    """
     logging.basicConfig(
         filename=f"output/{original_filename}_log.txt",
         filemode="w",
@@ -48,6 +66,11 @@ def configure_logging(original_filename: str) -> None:
 
 
 def get_cryptopan() -> CryptoPAn:
+    """
+    This function returns the global CryptoPAn instance.
+
+    :return: CryptoPAn instance.
+    """
     if cryptopan is None:
         raise Exception("CryptoPAn not configured")
     return cryptopan
