@@ -7,6 +7,7 @@ from scapy.all import Packet, PcapReader, wrpcap
 
 from steps import (
     anon_app_data,
+    anon_icmp,
     anon_ip_address,
     anon_mac_address,
     anon_port_numbers,
@@ -23,6 +24,7 @@ def anonymize_pcap(packet: Packet, index: int) -> Packet:
     pkt = anon_port_numbers(pkt)
     pkt = anon_mac_address(pkt)
     pkt = anon_ip_address(pkt)
+    pkt = anon_icmp(pkt)
     pkt = anon_app_data(pkt)
     pkt = recalculate(pkt, index)
 
@@ -49,7 +51,7 @@ def main(path):
     anonymized_packets = []
     with PcapReader(path) as packets:
         for index, packet in enumerate(packets):
-            if index > 500:
+            if index > 100:
                 break
             # Anonymize and append packet
             print(f"Processing packet {packet.summary()}")

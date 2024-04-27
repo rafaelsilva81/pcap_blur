@@ -1,12 +1,3 @@
-2024-04-22 19:36:37 - INFO - Original file: test.pcap - 812077 bytes
-2024-04-22 19:36:37 - INFO - Machine information: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD - Windows-10-10.0.19045-SP0 - 64bit
-2024-04-22 19:36:37 - INFO - Node/Host name: DESKTOP-V4VVDSM
-2024-04-22 19:36:37 - ERROR - Error while recalculating checksum for packet 7: 'ICMPv6ND_RA' object has no attribute 'chksum'
-2024-04-22 19:36:37 - WARNING - Incorrect IP length for packet 9, probably truncated, recalculating length
-2024-04-22 19:36:37 - WARNING - Incorrect IP length for packet 63, probably truncated, recalculating length
-2024-04-22 19:36:37 - WARNING - Incorrect IP length for packet 64, probably truncated, recalculating length
-2024-04-22 19:36:37 - WARNING - Incorrect IP length for packet 66, probably truncated, recalculating length
-2024-04-22 19:36:37 - WARNING - Incorrect IP length for packet 67, probably truncated, recalculating length
-2024-04-22 19:36:37 - WARNING - Incorrect IP length for packet 73, probably truncated, recalculating length
-2024-04-22 19:36:37 - WARNING - Incorrect IP length for packet 84, probably truncated, recalculating length
-2024-04-22 19:36:37 - WARNING - Incorrect IP length for packet 94, probably truncated, recalculating length
+2024-04-24 22:01:12 - INFO - Original file: test.pcap - 812077 bytes
+2024-04-24 22:01:12 - INFO - Machine information: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD - Windows-10-10.0.19045-SP0 - 64bit
+2024-04-24 22:01:12 - INFO - Node/Host name: DESKTOP-V4VVDSM

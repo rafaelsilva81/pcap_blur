@@ -1,0 +1,30 @@
+2024-04-27 15:04:34 - INFO - Original file: icmp.pcap - 3573 bytes
+2024-04-27 15:04:34 - INFO - Machine information: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD - Windows-10-10.0.19045-SP0 - 64bit
+2024-04-27 15:04:34 - INFO - Node/Host name: DESKTOP-V4VVDSM
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 27, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 28, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 29, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 30, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 31, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 32, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 33, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 34, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 35, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 36, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 37, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 38, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 39, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 40, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 41, probably truncated, recalculating length
+2024-04-27 15:04:34 - WARNING - Incorrect IP length for packet 42, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 43, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 44, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 45, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 46, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 47, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 48, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 49, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 50, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 51, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 52, probably truncated, recalculating length
+2024-04-27 15:04:35 - WARNING - Incorrect IP length for packet 53, probably truncated, recalculating length
