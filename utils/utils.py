@@ -74,3 +74,15 @@ def get_cryptopan() -> CryptoPAn:
     if cryptopan is None:
         raise Exception("CryptoPAn not configured")
     return cryptopan
+
+
+def safe_setattr(obj, attr_name, value):
+    """
+    This function sets an attribute of an object if it exists, otherwise it does nothing.
+
+    :param obj: The object to set the attribute on.
+    :param attr_name: The name of the attribute to set.
+    :param value: The value to set the attribute to.
+    """
+    if hasattr(obj, attr_name):
+        setattr(obj, attr_name, value)

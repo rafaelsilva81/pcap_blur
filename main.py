@@ -24,7 +24,7 @@ def anonymize_pcap(packet: Packet, index: int) -> Packet:
     pkt = anon_port_numbers(pkt)
     pkt = anon_mac_address(pkt)
     pkt = anon_ip_address(pkt)
-    pkt = anon_icmp(pkt)
+    pkt = anon_icmp(pkt, index)
     pkt = anon_app_data(pkt)
     pkt = recalculate(pkt, index)
 
