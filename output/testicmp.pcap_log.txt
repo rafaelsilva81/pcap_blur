@@ -1,3 +1,0 @@
-2024-04-27 15:06:00 - INFO - Original file: testicmp.pcap - 3732 bytes
-2024-04-27 15:06:00 - INFO - Machine information: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD - Windows-10-10.0.19045-SP0 - 64bit
-2024-04-27 15:06:00 - INFO - Node/Host name: DESKTOP-V4VVDSM

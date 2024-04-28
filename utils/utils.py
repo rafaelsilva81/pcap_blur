@@ -49,7 +49,7 @@ def configure_cryptopan(key: bytes) -> None:
     cryptopan = CryptoPAn(key)
 
 
-def configure_logging(original_filename: str) -> None:
+def configure_logging(original_filename: str, outDir: str, outName: str) -> None:
     """
     This function configures the logging for the original file using the logging module.
 
@@ -57,7 +57,7 @@ def configure_logging(original_filename: str) -> None:
     :return: None
     """
     logging.basicConfig(
-        filename=f"output/{original_filename}_log.txt",
+        filename=f"{outDir}/{outName}_log.txt",
         filemode="w",
         level=logging.DEBUG,
         format="%(asctime)s - %(levelname)s - %(message)s",

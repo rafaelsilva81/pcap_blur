@@ -31,7 +31,7 @@ def anonymize_pcap(packet: Packet, index: int) -> Packet:
 
 
 def init(path: str, outDir: str, outName: str):
-    configure_logging(os.path.basename(path))
+    configure_logging(os.path.basename(path), outDir, outName)
     key = os.urandom(32)
     configure_cryptopan(key)
 
