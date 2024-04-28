@@ -2,6 +2,7 @@ import logging as log
 
 from scapy.all import Packet
 from scapy.layers.inet import ICMP
+from scapy.layers.inet6 import IPv6
 from yacryptopan import CryptoPAn
 
 from utils import get_cryptopan
@@ -128,6 +129,15 @@ def anon_icmp_v4(packet: Packet, index: int, cp: CryptoPAn) -> Packet:
 #     return packet  # TODO
 
 
+def anon_icmp_v6(packet: Packet, index: int, cp: CryptoPAn) -> Packet:
+    if packet.haslayer(IPv6) and packet[IPv6].nh == 58:
+        # Obter a próxima camada depois da layer IPv6
+        log.info(f"Truncation data for ICMPv6 packet layer at index {index}")
+        packet.load = b""
+        del packet[IPv6].cksum
+    return packet
+
+
 def anon_icmp(packet: Packet, index: int) -> Packet:
     cp = get_cryptopan()
     if cp is None:
@@ -136,5 +146,5 @@ def anon_icmp(packet: Packet, index: int) -> Packet:
 
     packet = anon_icmp_v4(packet, index, cp)
 
-    # packet = anon_icmp_v6(packet, index, cp)
+    packet = anon_icmp_v6(packet, index, cp)
     return packet

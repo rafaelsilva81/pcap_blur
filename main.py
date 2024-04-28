@@ -1,7 +1,7 @@
+import argparse
 import logging as log
 import os
 import platform
-import sys
 
 from scapy.all import Packet, PcapReader, wrpcap
 
@@ -19,7 +19,6 @@ from utils import configure_cryptopan, configure_logging
 def anonymize_pcap(packet: Packet, index: int) -> Packet:
     pkt = packet.copy()
 
-    # packet.show2()
     # packet = anon_timestamps(packet)
     pkt = anon_port_numbers(pkt)
     pkt = anon_mac_address(pkt)
@@ -31,7 +30,7 @@ def anonymize_pcap(packet: Packet, index: int) -> Packet:
     return pkt
 
 
-def main(path):
+def init(path: str, outDir: str, outName: str):
     configure_logging(os.path.basename(path))
     key = os.urandom(32)
     configure_cryptopan(key)
@@ -51,29 +50,49 @@ def main(path):
     anonymized_packets = []
     with PcapReader(path) as packets:
         for index, packet in enumerate(packets):
-            if index > 100:
-                break
-            # Anonymize and append packet
-            print(f"Processing packet {packet.summary()}")
-
             modified_packet = anonymize_pcap(packet.copy(), index + 1)
             anonymized_packets.append(modified_packet)
             packet_count += 1
 
-            # Progress update  logic here (adjust as needed)
-            print(f"Processed {packet_count} packets")
             # Save the anonymized packets to a new file
-    file_name = path.replace(".pcap", "_out.pcap")
-    wrpcap(f"output/{file_name}", anonymized_packets)
-    print(f"\nAnonymized file saved to {file_name}")
+    # Make the output directory if it doesn't exist
+    if not os.path.exists(outDir):
+        os.makedirs(outDir)
+
+    wrpcap(f"{outDir}/{outName}", anonymized_packets)
+    print(f"\nAnonymized file saved to {outDir}/{outName}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="PcapBlur is a tool for anonymizing network traffic captured in .pcap files."
+    )
+    parser.add_argument("path", help="Path to the .pcap file to be anonymized.")
+    parser.add_argument(
+        "--outDir",
+        "-o",
+        help="Set the output directory for anonymized .pcap file. (OPTIONAL)",
+    )
+    parser.add_argument(
+        "--outName",
+        "-n",
+        help="Set the filename of the anonymized .pcap file. (OPTIONAL)",
+    )
+
+    args = parser.parse_args()
+    path = args.path
+    outDir = args.outDir if args.outDir else "output"
+    outName = (
+        f"{args.outName}"
+        if args.outName
+        else os.path.basename(path).replace(".pcap", "_out.pcap")
+    )
+
+    if os.path.exists(path):
+        init(path, outDir, outName)
+    else:
+        print(f"File not found: {path} - Please check the file path and try again.")
 
 
 if __name__ == "__main__":
-    file_path = sys.argv[1]
-
-    if os.path.exists(file_path):
-        main(file_path)
-    else:
-        print(
-            f"File not found: {file_path} - Please check the file path and try again."
-        )
+    main()
