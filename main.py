@@ -11,6 +11,7 @@ from steps import (
     anon_ip_address,
     anon_mac_address,
     anon_port_numbers,
+    anon_timestamps,
     recalculate,
 )
 from utils import configure_cryptopan, configure_logging
@@ -19,7 +20,7 @@ from utils import configure_cryptopan, configure_logging
 def anonymize_pcap(packet: Packet, index: int) -> Packet:
     pkt = packet.copy()
 
-    # packet = anon_timestamps(packet)
+    pkt = anon_timestamps(packet)
     pkt = anon_port_numbers(pkt)
     pkt = anon_mac_address(pkt)
     pkt = anon_ip_address(pkt)

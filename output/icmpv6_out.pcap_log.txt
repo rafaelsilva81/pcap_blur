@@ -1,0 +1,53 @@
+2024-05-01 14:19:49 - INFO - Original file: icmpv6.pcap - 5356 bytes
+2024-05-01 14:19:49 - INFO - Machine information: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD - Windows-10-10.0.19045-SP0 - 64bit
+2024-05-01 14:19:49 - INFO - Node/Host name: DESKTOP-V4VVDSM
+2024-05-01 14:19:49 - DEBUG - Looking up time zone info from registry
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 1
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 2
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 3
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 4
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 5
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 6
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 7
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 8
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 9
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 10
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 11
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 12
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 13
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 14
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 15
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 16
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 17
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 18
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 19
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 20
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 21
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 22
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 23
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 24
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 25
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 26
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 27
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 28
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 29
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 30
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 31
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 32
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 33
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 34
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 35
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 36
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 37
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 38
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 39
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 40
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 41
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 42
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 43
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 44
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 45
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 46
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 47
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 48
+2024-05-01 14:19:49 - INFO - Truncation data for ICMPv6 packet layer at index 49
