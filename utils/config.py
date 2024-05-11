@@ -21,21 +21,21 @@ def check_checksum(packet: Packet):
         del packet[IP].chksum
         new_checksum = packet[IP].chksum
         if original_checksum != new_checksum:
-            logging.warning(f"IP Checksum Invalid for package {packet.summary()}")
+            logging.error(f"IP Checksum Invalid for package {packet.summary()}")
 
     if packet.haslayer(IPv6):
         original_checksum = packet[IPv6].chksum
         del packet[IPv6].chksum
         new_checksum = packet[IPv6].chksum
         if original_checksum != new_checksum:
-            logging.warning(f"IPv6 Checksum Invalid for package {packet.summary()}")
+            logging.error(f"IPv6 Checksum Invalid for package {packet.summary()}")
 
     if packet.haslayer(TCP):
         original_checksum = packet[TCP].chksum
         del packet[TCP].chksum
         new_checksum = packet[TCP].chksum
         if original_checksum != new_checksum:
-            logging.warning(f"TCP Checksum Invalid for package {packet.summary()}")
+            logging.error(f"TCP Checksum Invalid for package {packet.summary()}")
 
 
 def configure_cryptopan(key: bytes) -> None:

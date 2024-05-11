@@ -14,13 +14,13 @@ from steps import (
     anon_timestamps,
     recalculate,
 )
-from utils import configure_cryptopan, configure_logging
+from utils import configure_cryptopan, configure_logging, validate_anonymization
 
 
 def anonymize_pcap(packet: Packet, index: int) -> Packet:
     pkt = packet.copy()
 
-    pkt = anon_timestamps(packet)
+    pkt = anon_timestamps(pkt)
     pkt = anon_port_numbers(pkt)
     pkt = anon_mac_address(pkt)
     pkt = anon_ip_address(pkt)
@@ -31,7 +31,7 @@ def anonymize_pcap(packet: Packet, index: int) -> Packet:
     return pkt
 
 
-def init(path: str, outDir: str, outName: str):
+def init_anonimization(path: str, outDir: str, outName: str):
     configure_logging(os.path.basename(path), outDir, outName)
     key = os.urandom(32)
     configure_cryptopan(key)
@@ -68,31 +68,57 @@ def main():
     parser = argparse.ArgumentParser(
         description="PcapBlur is a tool for anonymizing network traffic captured in .pcap files."
     )
-    parser.add_argument("path", help="Path to the .pcap file to be anonymized.")
+
+    group = parser.add_mutually_exclusive_group(required=True)
+
+    group.add_argument(
+        "path", nargs="?", help="Path to the .pcap file to be anonymized."
+    )
+
     parser.add_argument(
         "--outDir",
         "-o",
         help="Set the output directory for anonymized .pcap file. (OPTIONAL)",
     )
+
     parser.add_argument(
         "--outName",
         "-n",
         help="Set the filename of the anonymized .pcap file. (OPTIONAL)",
     )
 
-    args = parser.parse_args()
-    path = args.path
-    outDir = args.outDir if args.outDir else "output"
-    outName = (
-        f"{args.outName}"
-        if args.outName
-        else os.path.basename(path).replace(".pcap", "_out.pcap")
+    group.add_argument(
+        "--validate",
+        nargs=2,
+        metavar=("ORIGINAL_PCAP", "ANONYMIZED_PCAP"),
+        help="Provide paths to original and anonymized .pcap files for validation.",
     )
 
-    if os.path.exists(path):
-        init(path, outDir, outName)
+    args = parser.parse_args()
+
+    if args.validate:
+        original_pcap, anonymized_pcap = args.validate
+        if not os.path.exists(original_pcap):
+            print(f"File not found: {original_pcap}")
+            exit(1)
+        if not os.path.exists(anonymized_pcap):
+            print(f"File not found: {anonymized_pcap}")
+            exit(1)
+
+        validate_anonymization(original_pcap, anonymized_pcap)
     else:
-        print(f"File not found: {path} - Please check the file path and try again.")
+        path = args.path
+        outDir = args.outDir if args.outDir else "output"
+        outName = (
+            f"{args.outName}"
+            if args.outName
+            else os.path.basename(path).replace(".pcap", "_out.pcap")
+        )
+
+        if os.path.exists(path):
+            init_anonimization(path, outDir, outName)
+        else:
+            print(f"File not found: {path} - Please check the file path and try again.")
 
 
 if __name__ == "__main__":
