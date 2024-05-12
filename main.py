@@ -5,7 +5,7 @@ import threading
 import time
 from queue import Queue
 
-from scapy.all import sniff, wrpcap
+from scapy.all import PcapWriter, sniff
 
 from steps import (
     anon_app_data,
@@ -24,17 +24,19 @@ lock = threading.Lock()
 
 
 def anonymize_packet(packet, index):
-    packet = anon_port_numbers(packet)
-    packet = anon_mac_address(packet)
-    packet = anon_ip_address(packet)
-    packet = anon_icmp(packet, index)
-    packet = anon_app_data(packet)
-    packet = anon_timestamps(packet)
-    packet = recalculate(packet, index)
-    return packet
+    pkt = packet.copy()
+    packet = anon_timestamps(pkt)
+    packet = anon_port_numbers(pkt)
+    packet = anon_mac_address(pkt)
+    packet = anon_ip_address(pkt)
+    packet = anon_icmp(pkt, index)
+    packet = anon_app_data(pkt)
+    packet = recalculate(pkt, index)
+    return pkt
 
 
-def worker(out_path, batch_size=100):
+def worker(pcap_writer):
+    batch_size = 1000
     batch = []
     while True:
         item = packet_queue.get()
@@ -46,9 +48,9 @@ def worker(out_path, batch_size=100):
         batch.append(result)
 
         if len(batch) >= batch_size:
-            print(f"Anonymizing packet {index}")
             with lock:
-                wrpcap(out_path, batch)  # Append packets to the output file
+                for packet in batch:
+                    pcap_writer.write(packet)
             batch.clear()  # Clear the batch after writing
 
         packet_queue.task_done()
@@ -56,8 +58,8 @@ def worker(out_path, batch_size=100):
     # Handle remaining packets in the batch
     if batch:
         with lock:
-            print(f"Anonymizing packet {index}")
-            wrpcap(out_path, batch)
+            for packet in batch:
+                pcap_writer.write(packet)
 
 
 def init_anonymization(path: str, outDir: str, outName: str, num_threads: int):
@@ -70,22 +72,21 @@ def init_anonymization(path: str, outDir: str, outName: str, num_threads: int):
     if not os.path.exists(outDir):
         os.makedirs(outDir)
 
-    out_path = os.path.join(outDir, outName)
+    pcap_writer = PcapWriter(os.path.join(outDir, outName), append=False, sync=True)
 
     # Start worker threads
     threads = []
     for _ in range(num_threads):
-        t = threading.Thread(target=worker, args=(out_path,))
+        t = threading.Thread(target=worker, args=(pcap_writer,))
         t.start()
         threads.append(t)
 
-    global last_print_time
-    last_print_time = time.time()
-
     def packet_handler(pkt):
-        global index, last_print_time
+        global index
         with lock:
             index += 1
+            print(f"Anonymizing packet {index}")
+
         packet_queue.put((pkt, index))
 
     sniff(offline=path, prn=packet_handler, store=0)
@@ -99,10 +100,12 @@ def init_anonymization(path: str, outDir: str, outName: str, num_threads: int):
     for t in threads:
         t.join()
 
+    pcap_writer.close()
+
     end_time = time.time()
     duration = (end_time - start_time) * 1000  # Duration in milliseconds
     log.info(f"Anonymization process completed in {duration:.2f} ms")
-    print(f"\nAnonymized file saved to {out_path}")
+    print(f"\nAnonymized file saved to {outDir}/{outName}")
 
 
 def main():
@@ -132,15 +135,6 @@ def main():
 
     if args.outName is None:
         args.outName = os.path.basename(args.path).replace(".pcap", "_anonymized.pcap")
-
-    if not os.path.exists(args.outDir):
-        os.makedirs(args.outDir)
-
-    if not os.path.isfile(args.path):
-        print(
-            f"Error: The file {args.path} does not exist. Please provide a valid .pcap or .pcapng file."
-        )
-        return
 
     init_anonymization(args.path, args.outDir, args.outName, args.threads)
 
