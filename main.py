@@ -19,7 +19,7 @@ from steps import (
 from utils import configure_cryptopan, configure_logging
 
 packet_queue = Queue()
-index = 0
+index = 1
 lock = threading.Lock()
 
 
@@ -51,6 +51,7 @@ def worker(pcap_writer):
             with lock:
                 for packet in batch:
                     pcap_writer.write(packet)
+                    pcap_writer.flush()
             batch.clear()  # Clear the batch after writing
 
         packet_queue.task_done()
@@ -60,6 +61,7 @@ def worker(pcap_writer):
         with lock:
             for packet in batch:
                 pcap_writer.write(packet)
+                pcap_writer.flush()
 
 
 def init_anonymization(path: str, outDir: str, outName: str, num_threads: int):
@@ -69,10 +71,7 @@ def init_anonymization(path: str, outDir: str, outName: str, num_threads: int):
     key = os.urandom(32)
     configure_cryptopan(key)
 
-    if not os.path.exists(outDir):
-        os.makedirs(outDir)
-
-    pcap_writer = PcapWriter(os.path.join(outDir, outName), append=False, sync=True)
+    pcap_writer = PcapWriter(os.path.join(outDir, outName))
 
     # Start worker threads
     threads = []
@@ -135,6 +134,13 @@ def main():
 
     if args.outName is None:
         args.outName = os.path.basename(args.path).replace(".pcap", "_anonymized.pcap")
+
+    if not os.path.exists(args.outDir):
+        os.makedirs(args.outDir)
+
+    if not os.path.exists(args.path):
+        print(f"Error: The file {args.path} does not exist.")
+        return
 
     init_anonymization(args.path, args.outDir, args.outName, args.threads)
 
