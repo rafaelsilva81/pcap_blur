@@ -32,7 +32,6 @@ def anon_icmp_v6(packet: Packet, index: int, cp: CryptoPAn) -> Packet:
         # Obter a próxima camada depois da layer IPv6
         log.warn(f"Truncation data for ICMPv6 packet layer at index {index}")
         packet.load = b""
-        del packet[IPv6].cksum
     return packet
 
 

@@ -1,9 +1,11 @@
 import argparse
 import logging as log
 import os
-import platform
+import threading
+import time
+from queue import Queue
 
-from scapy.all import Packet, PcapReader, wrpcap
+from scapy.all import PcapWriter, sniff
 
 from steps import (
     anon_app_data,
@@ -14,53 +16,94 @@ from steps import (
     anon_timestamps,
     recalculate,
 )
-from utils import configure_cryptopan, configure_logging, validate_anonymization
+from utils import configure_cryptopan, configure_logging
+
+packet_queue = Queue()
+index = 0
+lock = threading.Lock()
 
 
-def anonymize_pcap(packet: Packet, index: int) -> Packet:
-    pkt = packet.copy()
-
-    pkt = anon_timestamps(pkt)
-    pkt = anon_port_numbers(pkt)
-    pkt = anon_mac_address(pkt)
-    pkt = anon_ip_address(pkt)
-    pkt = anon_icmp(pkt, index)
-    pkt = anon_app_data(pkt)
-    pkt = recalculate(pkt, index)
-
-    return pkt
+def anonymize_packet(packet, index):
+    packet = anon_port_numbers(packet)
+    packet = anon_mac_address(packet)
+    packet = anon_ip_address(packet)
+    packet = anon_icmp(packet, index)
+    packet = anon_app_data(packet)
+    packet = anon_timestamps(packet)
+    packet = recalculate(packet, index)
+    return packet
 
 
-def init_anonimization(path: str, outDir: str, outName: str):
+def worker(pcap_writer):
+    batch_size = 1000
+    batch = []
+    while True:
+        item = packet_queue.get()
+        if item is None:
+            packet_queue.task_done()
+            break  # Exit condition for the thread
+        pkt, idx = item
+        result = anonymize_packet(pkt, idx)
+        batch.append(result)
+
+        if len(batch) >= batch_size:
+            with lock:
+                for packet in batch:
+                    pcap_writer.write(packet)
+            batch.clear()  # Clear the batch after writing
+
+        packet_queue.task_done()
+
+    # Handle remaining packets in the batch
+    if batch:
+        with lock:
+            for packet in batch:
+                pcap_writer.write(packet)
+
+
+def init_anonymization(path: str, outDir: str, outName: str, num_threads: int):
+    start_time = time.time()
+    print("Beginning anonymization process")
     configure_logging(os.path.basename(path), outDir, outName)
     key = os.urandom(32)
     configure_cryptopan(key)
 
-    file_size = os.path.getsize(path)  # Size of packet trace in bytes
-
-    # Initialize progress tracking
-    packet_count = 0
-
-    # Log initial details
-    log.info(f"Original file: {os.path.basename(path)} - {file_size} bytes")
-    log.info(
-        f"Machine information: {platform.processor()} - {platform.platform()} - {platform.architecture()[0]}"
-    )
-    log.info(f"Node/Host name: {platform.node()}")
-
-    anonymized_packets = []
-    with PcapReader(path) as packets:
-        for index, packet in enumerate(packets):
-            modified_packet = anonymize_pcap(packet.copy(), index + 1)
-            anonymized_packets.append(modified_packet)
-            packet_count += 1
-
-            # Save the anonymized packets to a new file
-    # Make the output directory if it doesn't exist
     if not os.path.exists(outDir):
         os.makedirs(outDir)
 
-    wrpcap(f"{outDir}/{outName}", anonymized_packets)
+    pcap_writer = PcapWriter(os.path.join(outDir, outName), append=False, sync=True)
+
+    # Start worker threads
+    threads = []
+    for _ in range(num_threads):
+        t = threading.Thread(target=worker, args=(pcap_writer,))
+        t.start()
+        threads.append(t)
+
+    def packet_handler(pkt):
+        global index
+        with lock:
+            index += 1
+            print(f"Anonymizing packet {index}")
+
+        packet_queue.put((pkt, index))
+
+    sniff(offline=path, prn=packet_handler, store=0)
+
+    # Block until all tasks are done
+    packet_queue.join()
+
+    # Stop workers
+    for _ in range(num_threads):
+        packet_queue.put(None)
+    for t in threads:
+        t.join()
+
+    pcap_writer.close()
+
+    end_time = time.time()
+    duration = (end_time - start_time) * 1000  # Duration in milliseconds
+    log.info(f"Anonymization process completed in {duration:.2f} ms")
     print(f"\nAnonymized file saved to {outDir}/{outName}")
 
 
@@ -68,57 +111,31 @@ def main():
     parser = argparse.ArgumentParser(
         description="PcapBlur is a tool for anonymizing network traffic captured in .pcap files."
     )
-
-    group = parser.add_mutually_exclusive_group(required=True)
-
-    group.add_argument(
-        "path", nargs="?", help="Path to the .pcap file to be anonymized."
-    )
-
+    parser.add_argument("path", help="Path to the .pcap file to be anonymized.")
     parser.add_argument(
         "--outDir",
         "-o",
-        help="Set the output directory for anonymized .pcap file. (OPTIONAL)",
+        help="Set the output directory for the anonymized .pcap file. (OPTIONAL)",
+        default="output",
     )
-
     parser.add_argument(
         "--outName",
         "-n",
         help="Set the filename of the anonymized .pcap file. (OPTIONAL)",
     )
-
-    group.add_argument(
-        "--validate",
-        nargs=2,
-        metavar=("ORIGINAL_PCAP", "ANONYMIZED_PCAP"),
-        help="Provide paths to original and anonymized .pcap files for validation.",
+    parser.add_argument(
+        "--threads",
+        "-t",
+        help="Set the number of threads to use for anonymization. (OPTIONAL)",
+        default=os.cpu_count(),
+        type=int,
     )
-
     args = parser.parse_args()
 
-    if args.validate:
-        original_pcap, anonymized_pcap = args.validate
-        if not os.path.exists(original_pcap):
-            print(f"File not found: {original_pcap}")
-            exit(1)
-        if not os.path.exists(anonymized_pcap):
-            print(f"File not found: {anonymized_pcap}")
-            exit(1)
+    if args.outName is None:
+        args.outName = os.path.basename(args.path).replace(".pcap", "_anonymized.pcap")
 
-        validate_anonymization(original_pcap, anonymized_pcap)
-    else:
-        path = args.path
-        outDir = args.outDir if args.outDir else "output"
-        outName = (
-            f"{args.outName}"
-            if args.outName
-            else os.path.basename(path).replace(".pcap", "_out.pcap")
-        )
-
-        if os.path.exists(path):
-            init_anonimization(path, outDir, outName)
-        else:
-            print(f"File not found: {path} - Please check the file path and try again.")
+    init_anonymization(args.path, args.outDir, args.outName, args.threads)
 
 
 if __name__ == "__main__":
