@@ -35,7 +35,7 @@ def anonymize_packet(packet, index):
 
 
 def worker(pcap_writer):
-    batch_size = 1000
+    batch_size = 10000
     batch = []
     while True:
         item = packet_queue.get()
