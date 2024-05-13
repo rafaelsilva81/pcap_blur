@@ -17,48 +17,49 @@ from steps import (
 )
 from utils import configure_cryptopan, configure_logging
 
-anonymized_packets = []
-pcap_writer: PcapWriter | None = None
-index = 1
 
+class PcapAnonymizer:
+    def __init__(self, path, outDir, outName):
+        self.path = path
+        self.outDir = outDir
+        self.outName = outName
+        self.pcap_writer = PcapWriter(
+            os.path.join(self.outDir, self.outName), append=False
+        )
+        self.index = 1
 
-def anonymize_packet(pkt):
-    global index
-    global pcap_writer
+    def anonymize_packet(self, pkt):
+        pkt = anon_timestamps(pkt)
+        pkt = anon_port_numbers(pkt)
+        pkt = anon_mac_address(pkt)
+        pkt = anon_ip_address(pkt)
+        pkt = anon_icmp(pkt, self.index)
+        pkt = anon_app_data(pkt)
+        pkt = recalculate(pkt, self.index)
 
-    pkt = anon_timestamps(pkt)
-    pkt = anon_port_numbers(pkt)
-    pkt = anon_mac_address(pkt)
-    pkt = anon_ip_address(pkt)
-    pkt = anon_icmp(pkt, index)
-    pkt = anon_app_data(pkt)
-    pkt = recalculate(pkt, index)
+        self.index += 1
 
-    index += 1
+        if self.pcap_writer is not None:
+            self.pcap_writer.write(pkt)
+            self.pcap_writer.flush()
 
-    if pcap_writer is not None:
-        pcap_writer.write(pkt)
+        return pkt
 
-    return pkt
+    def init_anonymization(self):
+        start_time = time.time()
+        print("Beginning anonymization process")
 
+        configure_logging(os.path.basename(self.path), self.outDir, self.outName)
 
-def init_anonymization(path: str, outDir: str, outName: str, num_threads: int):
-    global pcap_writer
+        key = os.urandom(32)
+        configure_cryptopan(key)
 
-    pcap_writer = PcapWriter(os.path.join(outDir, outName), append=False)
+        sniff(offline=self.path, prn=self.anonymize_packet, store=0)
 
-    start_time = time.time()
-    print("Beginning anonymization process")
-    configure_logging(os.path.basename(path), outDir, outName)
-    key = os.urandom(32)
-    configure_cryptopan(key)
-
-    sniff(offline=path, prn=anonymize_packet, store=0)
-
-    end_time = time.time()
-    duration = (end_time - start_time) * 1000  # Duration in milliseconds
-    log.info(f"Anonymization process completed in {duration:.2f} ms")
-    print(f"\nAnonymized file saved to {outDir}/{outName}")
+        end_time = time.time()
+        duration = (end_time - start_time) * 1000  # Duration in milliseconds
+        log.info(f"Anonymization process completed in {duration:.2f} ms")
+        print(f"\nAnonymized file saved to {self.outDir}/{self.outName}")
 
 
 def main():
@@ -77,13 +78,6 @@ def main():
         "-n",
         help="Set the filename of the anonymized .pcap file. (OPTIONAL)",
     )
-    parser.add_argument(
-        "--threads",
-        "-t",
-        help="Set the number of threads to use for anonymization. (OPTIONAL)",
-        default=os.cpu_count(),
-        type=int,
-    )
     args = parser.parse_args()
 
     if args.outName is None:
@@ -96,7 +90,8 @@ def main():
         print(f"Error: The file {args.path} does not exist.")
         return
 
-    init_anonymization(args.path, args.outDir, args.outName, args.threads)
+    anonymizer = PcapAnonymizer(args.path, args.outDir, args.outName)
+    anonymizer.init_anonymization()
 
 
 if __name__ == "__main__":
