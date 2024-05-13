@@ -61,6 +61,7 @@ def write_packets_to_file(pcap_writer):
                 idx, packet = write_queue.get()
                 if idx == current_index:
                     pcap_writer.write(packet)
+                    pcap_writer.flush()
                     current_index += 1
                 else:
                     write_queue.put((idx, packet))

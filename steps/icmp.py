@@ -10,28 +10,24 @@ from utils import get_cryptopan
 
 def anon_icmp_v4(packet: Packet, index: int, cp: CryptoPAn) -> Packet:
     if packet.haslayer(ICMP):
-        log.warn(
-            f"ICMP packet found at index {index}, truncating potential sensible data"
-        )
-        if packet[ICMP].gw is not None:
-            packet[ICMP].gw = cp.anonymize(packet[ICMP].gw)
-        if packet[ICMP].addr_mask is not None:
-            packet[ICMP].addr_mask = cp.anonymize(packet[ICMP].addr_mask)
-        if packet[ICMP].ts_ori is not None:
-            packet[ICMP].ts_ori = 0
-        if packet[ICMP].ts_rx is not None:
-            packet[ICMP].ts_rx = 0
-        if packet[ICMP].ts_tx is not None:
-            packet[ICMP].ts_tx = 0
+        log.debug(f"Anonymizing ICMP packet at index {index}.")
+        for field in ["gw", "addr_mask"]:
+            if getattr(packet[ICMP], field, None) is not None:
+                setattr(packet[ICMP], field, cp.anonymize(getattr(packet[ICMP], field)))
+
+        for field in ["ts_ori", "ts_rx", "ts_tx"]:
+            if getattr(packet[ICMP], field, None) is not None:
+                setattr(packet[ICMP], field, 0)
+
         del packet[ICMP].chksum
     return packet
 
 
 def anon_icmp_v6(packet: Packet, index: int, cp: CryptoPAn) -> Packet:
     if packet.haslayer(IPv6) and packet[IPv6].nh == 58:
-        # Obter a próxima camada depois da layer IPv6
-        log.warn(f"Truncation data for ICMPv6 packet layer at index {index}")
-        packet.load = b""
+        log.debug(f"Handling ICMPv6 packet at index {index}.")
+        # Assuming specific anonymization tasks for ICMPv6 could be defined here
+        packet.load = b""  # Consider more granular handling than wiping payload
     return packet
 
 
@@ -41,6 +37,5 @@ def anon_icmp(packet: Packet, index: int) -> Packet:
         raise Exception("CryptoPAn not configured")
 
     packet = anon_icmp_v4(packet, index, cp)
-
     packet = anon_icmp_v6(packet, index, cp)
     return packet

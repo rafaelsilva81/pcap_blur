@@ -1,40 +1,26 @@
 from datetime import datetime, timezone
+from decimal import Decimal as EDecimal
 
-import tzlocal
 from scapy.all import Packet
-from scapy.utils import EDecimal
 
 
 def precision_degradation(timestamp: EDecimal) -> EDecimal:
     """
-    Converts the timestamp EDecimal to a float and then applies the precision degradation algorithm.
-
-    :param timestamp: EDecimal timestamp to be converted and degraded.
-    :return: Degraded timestamp.
+    Rounds down the timestamp to the nearest minute in UTC, improving performance by avoiding unnecessary conversions.
     """
-    timestamp_float = float(timestamp)
-
-    local_tz = tzlocal.get_localzone()
-
-    timestamp_datetime = datetime.fromtimestamp(timestamp_float, tz=timezone.utc)
-
-    timestamp_datetime_local = timestamp_datetime.astimezone(local_tz)
-
-    degraded_datetime_local = timestamp_datetime_local.replace(microsecond=0, second=0)
-
-    degraded_datetime_utc = degraded_datetime_local.astimezone(timezone.utc)
-
-    degraded_edecimal = EDecimal(degraded_datetime_utc.timestamp())
-    return degraded_edecimal
+    # Convert EDecimal directly to datetime in UTC
+    timestamp_datetime = datetime.fromtimestamp(float(timestamp), tz=timezone.utc)
+    # Degrade precision by rounding down to the nearest minute
+    degraded_datetime = timestamp_datetime.replace(second=0, microsecond=0)
+    # Convert back to EDecimal
+    return EDecimal(degraded_datetime.timestamp())
 
 
 def anon_timestamps(packet: Packet) -> Packet:
     """
-    Anonymizes the timestamps of a packet using the precision degradation function.
-
-    :param packet: Scapy Packet to be processed.
-    :return: Anonymized packet.
+    Anonymizes the timestamps of a packet by degrading its precision.
     """
-    degraded_ts = precision_degradation(packet.time)
-    packet.time = degraded_ts
+    if hasattr(packet, "time"):
+        degraded_ts = precision_degradation(EDecimal(packet.time))
+        packet.time = degraded_ts
     return packet
