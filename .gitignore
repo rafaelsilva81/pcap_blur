@@ -13,7 +13,7 @@ __pycache__/
 
 *.pcap
 *.pcapng
-output/*.txt
+output/
 
 # C extensions
 *.so
