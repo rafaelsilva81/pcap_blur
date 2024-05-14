@@ -13,7 +13,8 @@ __pycache__/
 
 *.pcap
 *.pcapng
-output/
+output/*.txt
+
 # C extensions
 *.so
 # Distribution / packaging
