@@ -2,6 +2,8 @@ import argparse
 import logging as log
 import os
 import time
+from collections import deque
+from threading import Event, Thread
 
 from scapy.all import sniff
 from scapy.utils import PcapWriter
@@ -19,14 +21,17 @@ from utils import configure_cryptopan, configure_logging
 
 
 class PcapAnonymizer:
-    def __init__(self, path, outDir, outName):
+    def __init__(self, path, outDir, outName, buffer_size=1000):
         self.path = path
         self.outDir = outDir
         self.outName = outName
+        self.buffer_size = buffer_size
         self.pcap_writer = PcapWriter(
             os.path.join(self.outDir, self.outName), append=False
         )
         self.index = 1
+        self.buffer = deque()
+        self.stop_event = Event()
 
     def anonymize_packet(self, pkt):
         pkt = anon_timestamps(pkt)
@@ -39,11 +44,22 @@ class PcapAnonymizer:
 
         self.index += 1
 
-        if self.pcap_writer is not None:
-            self.pcap_writer.write(pkt)
-            self.pcap_writer.flush()
+        self.buffer.append(pkt)
+        if len(self.buffer) >= self.buffer_size:
+            self.flush_buffer()
 
-        return
+    def flush_buffer(self):
+        while self.buffer:
+            pkt = self.buffer.popleft()
+            self.pcap_writer.write(pkt)
+        self.pcap_writer.flush()
+
+    def progress_counter(self):
+        start_time = time.time()
+        while not self.stop_event.is_set():
+            time.sleep(10)
+            elapsed_time = time.time() - start_time
+            print(f"Processed {self.index - 1} packets in {elapsed_time:.2f} seconds.")
 
     def init_anonymization(self):
         start_time = time.time()
@@ -54,7 +70,18 @@ class PcapAnonymizer:
         key = os.urandom(32)
         configure_cryptopan(key)
 
+        # Start the progress counter in a separate thread
+        progress_thread = Thread(target=self.progress_counter)
+        progress_thread.start()
+
         sniff(offline=self.path, prn=self.anonymize_packet, store=0)
+
+        # Flush any remaining packets in the buffer
+        self.flush_buffer()
+
+        # Stop the progress counter
+        self.stop_event.set()
+        progress_thread.join()
 
         end_time = time.time()
         duration = (end_time - start_time) * 1000  # Duration in milliseconds
