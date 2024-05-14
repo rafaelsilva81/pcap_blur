@@ -43,13 +43,13 @@ class PcapAnonymizer:
             self.pcap_writer.write(pkt)
             self.pcap_writer.flush()
 
-        return pkt
+        return
 
     def init_anonymization(self):
         start_time = time.time()
         print("Beginning anonymization process")
 
-        configure_logging(os.path.basename(self.path), self.outDir, self.outName)
+        configure_logging(self.outDir, self.outName)
 
         key = os.urandom(32)
         configure_cryptopan(key)

@@ -49,7 +49,7 @@ def configure_cryptopan(key: bytes) -> None:
     cryptopan = CryptoPAn(key)
 
 
-def configure_logging(original_filename: str, outDir: str, outName: str) -> None:
+def configure_logging(outDir: str, outName: str) -> None:
     """
     This function configures the logging for the original file using the logging module.
 
