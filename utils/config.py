@@ -49,7 +49,7 @@ def configure_cryptopan(key: bytes) -> None:
     cryptopan = CryptoPAn(key)
 
 
-def configure_logging(outDir: str, outName: str) -> None:
+def initial_logging_config() -> None:
     """
     This function configures the logging for the original file using the logging module.
 
@@ -57,12 +57,34 @@ def configure_logging(outDir: str, outName: str) -> None:
     :return: None
     """
     logging.basicConfig(
-        filename=f"{outDir}/{outName}_log.txt",
         filemode="w",
-        level=logging.DEBUG,
+        level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+
+def change_log_file(outDir: str, outName: str) -> None:
+    """
+    This function changes the logging file for the original file using the logging module.
+
+    :param original_filename: Original file name.
+    :return: None
+    """
+    logger = logging.getLogger()
+
+    for handler in logger.handlers:
+        logger.removeHandler(handler)
+        handler.close()
+
+    handler = logging.FileHandler(f"{outDir}/{outName}_log.txt", mode="w")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+    )
+
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
 
 def get_cryptopan() -> CryptoPAn:

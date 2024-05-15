@@ -5,7 +5,7 @@ import signal
 import sys
 
 from anonymizer import PcapAnonymizer
-from utils import configure_logging
+from utils import change_log_file, initial_logging_config
 
 
 def signal_handler(sig, frame):
@@ -16,6 +16,8 @@ def signal_handler(sig, frame):
 def main():
     # Setup signal handler for SIGINT
     signal.signal(signal.SIGINT, signal_handler)
+
+    initial_logging_config()
 
     parser = argparse.ArgumentParser(
         description="PcapBlur is a tool for anonymizing network traffic captured in .pcap files."
@@ -66,7 +68,7 @@ def main():
 
         for pcap_file in pcap_files:
             out_name = os.path.basename(pcap_file).replace(".pcap", "_anonymized.pcap")
-            configure_logging(out_folder_logs, out_name)
+            change_log_file(out_folder_logs, out_name)
             pcap_anonymizer = PcapAnonymizer(pcap_file, out_folder, out_name)
             pcap_anonymizer.anonymize_file()
 
@@ -84,7 +86,9 @@ def main():
             print(f"Error: The file {args.path} does not exist.")
             return
 
-        configure_logging(args.outDir, args.path)
+        file_name = os.path.basename(args.path)
+
+        change_log_file(args.outDir, file_name)
         pcap_anonymizer = PcapAnonymizer(args.path, args.outDir, args.outName)
         pcap_anonymizer.anonymize_file()
 

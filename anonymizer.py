@@ -1,7 +1,10 @@
 import logging as log
+import math
 import os
+import platform
 import time
 
+import psutil
 from scapy.all import sniff
 from scapy.utils import PcapWriter
 
@@ -14,7 +17,7 @@ from steps import (
     anon_timestamps,
     recalculate,
 )
-from utils import configure_cryptopan, configure_logging
+from utils import configure_cryptopan
 
 
 class PcapAnonymizer:
@@ -28,6 +31,9 @@ class PcapAnonymizer:
         self.index = 1
 
     def anonymize_packet(self, pkt):
+        """
+        This function anonymizes a single packet and returns the anonymized packet.
+        """
         pkt = anon_timestamps(pkt)
         pkt = anon_port_numbers(pkt)
         pkt = anon_mac_address(pkt)
@@ -44,14 +50,40 @@ class PcapAnonymizer:
 
         return
 
-    def anonymize_file(self):
-        start_time = time.time()
-        print(f"Beginning anonymization process on {self.path}")
+    def log_system_info(self):
+        """
+        This function logs system information, the information logged is the following:
+        - File name
+        - OS information
+        - Machine information (CPU, RAM, etc.)
+        - Date and time of the start of the process
+        - Original file size
+        """
 
-        configure_logging(self.outDir, self.outName)
+        log.info(f"Anonymization process started on {self.path}")
+        log.info(
+            f"OS: {platform.system()} version: {platform.version()} release: {platform.release()}"
+        )
+        log.info(
+            f"Machine: {platform.processor()} - {math.ceil(psutil.virtual_memory().total / 1024**3)} GB"
+        )
+        log.info(f"Datetime: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        log.info(f"Original file size: {os.path.getsize(self.path)} bytes")
+
+    def anonymize_file(self):
+        """
+        This is the main function that performs the anonymization process.
+        It reads the file, anonymizes the packets, and writes the anonymized packets to a new file.
+        It also logs system information such as the file name, the number of packets, and the duration of the anonymization process.
+        """
+        self.log_system_info()
+
+        print(f"Beginning anonymization process on {self.path}")
 
         key = os.urandom(32)
         configure_cryptopan(key)
+
+        start_time = time.time()
 
         sniff(offline=self.path, prn=self.anonymize_packet, store=0)
 
