@@ -1,8 +1,0 @@
-2024-05-14 21:32:39 - DEBUG - Looking up time zone info from registry
-2024-05-14 21:32:39 - DEBUG - Anonymizing ICMP packet at index 9.
-2024-05-14 21:32:39 - DEBUG - Anonymizing ICMP packet at index 58.
-2024-05-14 21:32:39 - DEBUG - Anonymizing ICMP packet at index 76.
-2024-05-14 21:32:39 - DEBUG - Anonymizing ICMP packet at index 100.
-2024-05-14 21:32:39 - DEBUG - Anonymizing ICMP packet at index 153.
-2024-05-14 21:32:39 - DEBUG - Anonymizing ICMP packet at index 242.
-2024-05-14 21:32:39 - INFO - Anonymization process completed in 376.00 ms

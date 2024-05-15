@@ -1,68 +1,22 @@
 import argparse
-import logging as log
+import glob
 import os
-import time
+import signal
+import sys
 
-from scapy.all import sniff
-from scapy.utils import PcapWriter
-
-from steps import (
-    anon_app_data,
-    anon_icmp,
-    anon_ip_address,
-    anon_mac_address,
-    anon_port_numbers,
-    anon_timestamps,
-    recalculate,
-)
-from utils import configure_cryptopan, configure_logging
+from anonymizer import PcapAnonymizer
+from utils import configure_logging
 
 
-class PcapAnonymizer:
-    def __init__(self, path, outDir, outName):
-        self.path = path
-        self.outDir = outDir
-        self.outName = outName
-        self.pcap_writer = PcapWriter(
-            os.path.join(self.outDir, self.outName), append=False
-        )
-        self.index = 1
-
-    def anonymize_packet(self, pkt):
-        pkt = anon_timestamps(pkt)
-        pkt = anon_port_numbers(pkt)
-        pkt = anon_mac_address(pkt)
-        pkt = anon_ip_address(pkt)
-        pkt = anon_icmp(pkt, self.index)
-        pkt = anon_app_data(pkt)
-        pkt = recalculate(pkt, self.index)
-
-        self.index += 1
-
-        if self.pcap_writer is not None:
-            self.pcap_writer.write(pkt)
-            self.pcap_writer.flush()
-
-        return
-
-    def single_file_anonymization(self):
-        start_time = time.time()
-        print("Beginning anonymization process ")
-
-        configure_logging(self.outDir, self.outName)
-
-        key = os.urandom(32)
-        configure_cryptopan(key)
-
-        sniff(offline=self.path, prn=self.anonymize_packet, store=0)
-
-        end_time = time.time()
-        duration = (end_time - start_time) * 1000  # Duration in milliseconds
-        log.info(f"Anonymization process completed in {duration:.2f} ms")
-        print(f"\nAnonymized file saved to {self.outDir}/{self.outName}")
+def signal_handler(sig, frame):
+    print("\nInterrupt received. Exiting...")
+    sys.exit(0)
 
 
 def main():
+    # Setup signal handler for SIGINT
+    signal.signal(signal.SIGINT, signal_handler)
+
     parser = argparse.ArgumentParser(
         description="PcapBlur is a tool for anonymizing network traffic captured in .pcap files."
     )
@@ -72,7 +26,7 @@ def main():
     group.add_argument(
         "path", nargs="?", help="Path to the .pcap file to be anonymized."
     )
-    group.add_argument("--folder", help="Specify a folder for batch anonymization.")
+    group.add_argument("--batch", help="Specify a folder for batch anonymization.")
 
     parser.add_argument(
         "--outDir",
@@ -88,13 +42,34 @@ def main():
 
     args = parser.parse_args()
 
-    if args.folder:
+    if args.batch:
         # Handling batch anonymization for a folder
         if args.outName:
-            parser.error("--outName cannot be used with --folder")
-        print(f"Batch anonymization for folder: {args.folder}")
-        print(f"Output directory: {args.outDir}")
-        # Add your batch anonymization code here
+            parser.error("--outName cannot be used with --batch")
+
+        print(f"Batch anonymization for folder: {args.batch}")
+
+        out_folder = os.path.join(args.batch, args.outDir)
+        out_folder_logs = os.path.join(out_folder, "logs")
+
+        if not os.path.exists(out_folder):
+            os.makedirs(out_folder)
+
+        if not os.path.exists(out_folder_logs):
+            os.makedirs(out_folder_logs)
+
+        # Search for all .pcap or .pcapng files in the folder
+
+        pcap_files = glob.glob(os.path.join(args.batch, "*.pcap")) + glob.glob(
+            os.path.join(args.batch, "*.pcapng")
+        )
+
+        for pcap_file in pcap_files:
+            out_name = os.path.basename(pcap_file).replace(".pcap", "_anonymized.pcap")
+            configure_logging(out_folder_logs, out_name)
+            pcap_anonymizer = PcapAnonymizer(pcap_file, out_folder, out_name)
+            pcap_anonymizer.anonymize_file()
+
     else:
         # Handling single file anonymization
         if args.outName is None:
@@ -109,12 +84,9 @@ def main():
             print(f"Error: The file {args.path} does not exist.")
             return
 
-        print(f"Single file anonymization for path: {args.path}")
-        print(f"Output directory: {args.outDir}")
-        print(f"Output filename: {args.outName}")
+        configure_logging(args.outDir, args.path)
         pcap_anonymizer = PcapAnonymizer(args.path, args.outDir, args.outName)
-        pcap_anonymizer.single_file_anonymization()
-        # Add your single file anonymization code here
+        pcap_anonymizer.anonymize_file()
 
 
 if __name__ == "__main__":
