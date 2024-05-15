@@ -1,6 +1,0 @@
-2024-04-16 20:27:59 - INFO - Original file: test.pcap - 812077 bytes
-2024-04-16 20:27:59 - INFO - Machine information: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD - Windows-10-10.0.19045-SP0 - 64bit
-2024-04-16 20:27:59 - INFO - Node/Host name: DESKTOP-V4VVDSM
-2024-04-16 20:27:59 - ERROR - Error while recalculating checksum for packet 7: 'IPv6' object has no attribute 'chksum'
-2024-04-16 20:27:59 - WARNING - Packet 9 has an incorrect IP length and is probably truncated, the length will be recalculated, original length: 46
-2024-04-16 20:27:59 - INFO - Time taken in seconds: 0.052887678146362305

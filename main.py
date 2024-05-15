@@ -45,9 +45,9 @@ class PcapAnonymizer:
 
         return
 
-    def init_anonymization(self):
+    def single_file_anonymization(self):
         start_time = time.time()
-        print("Beginning anonymization process")
+        print("Beginning anonymization process ")
 
         configure_logging(self.outDir, self.outName)
 
@@ -66,32 +66,55 @@ def main():
     parser = argparse.ArgumentParser(
         description="PcapBlur is a tool for anonymizing network traffic captured in .pcap files."
     )
-    parser.add_argument("path", help="Path to the .pcap file to be anonymized.")
+
+    # Create mutually exclusive group
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "path", nargs="?", help="Path to the .pcap file to be anonymized."
+    )
+    group.add_argument("--folder", help="Specify a folder for batch anonymization.")
+
     parser.add_argument(
         "--outDir",
         "-o",
-        help="Set the output directory for the anonymized .pcap file. (OPTIONAL)",
+        help="Set the output directory for the anonymized .pcap file(s).",
         default="output",
     )
     parser.add_argument(
         "--outName",
         "-n",
-        help="Set the filename of the anonymized .pcap file. (OPTIONAL)",
+        help="Set the filename of the anonymized .pcap file. (OPTIONAL, works with path only)",
     )
+
     args = parser.parse_args()
 
-    if args.outName is None:
-        args.outName = os.path.basename(args.path).replace(".pcap", "_anonymized.pcap")
+    if args.folder:
+        # Handling batch anonymization for a folder
+        if args.outName:
+            parser.error("--outName cannot be used with --folder")
+        print(f"Batch anonymization for folder: {args.folder}")
+        print(f"Output directory: {args.outDir}")
+        # Add your batch anonymization code here
+    else:
+        # Handling single file anonymization
+        if args.outName is None:
+            args.outName = os.path.basename(args.path).replace(
+                ".pcap", "_anonymized.pcap"
+            )
 
-    if not os.path.exists(args.outDir):
-        os.makedirs(args.outDir)
+        if not os.path.exists(args.outDir):
+            os.makedirs(args.outDir)
 
-    if not os.path.exists(args.path):
-        print(f"Error: The file {args.path} does not exist.")
-        return
+        if not os.path.exists(args.path):
+            print(f"Error: The file {args.path} does not exist.")
+            return
 
-    anonymizer = PcapAnonymizer(args.path, args.outDir, args.outName)
-    anonymizer.init_anonymization()
+        print(f"Single file anonymization for path: {args.path}")
+        print(f"Output directory: {args.outDir}")
+        print(f"Output filename: {args.outName}")
+        pcap_anonymizer = PcapAnonymizer(args.path, args.outDir, args.outName)
+        pcap_anonymizer.single_file_anonymization()
+        # Add your single file anonymization code here
 
 
 if __name__ == "__main__":

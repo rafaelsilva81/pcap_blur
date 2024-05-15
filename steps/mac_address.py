@@ -1,47 +1,7 @@
-import random
-from typing import Dict
-
 from scapy.all import Packet
 from scapy.layers.l2 import ARP, Ether
 
-# Mapeamentos para identificadores de fabricante e de dispositivo
-manufacturer_map: Dict[str, str] = {}
-device_map: Dict[str, str] = {}
-
-
-def generate_permutation_mac(
-    mac_part: str, mac_map: Dict[str, str], is_group_address: bool = False
-) -> str:
-    """
-    Generates a permutation for a part of the MAC address, ensuring it retains group or individual characteristics.
-
-    :param mac_part: Part of the MAC address to be permuted.
-    :param mac_map: Dictionary for permutation mapping.
-    :param is_group_address: Flag to ensure the resulting MAC is a group address.
-    :return: Permuted part of the MAC address.
-    """
-    if mac_part in mac_map:
-        return mac_map[mac_part]
-    else:
-        # Generate random permutation
-        permuted_part = ":".join(["%02x" % random.randint(0, 255) for _ in range(3)])
-        while permuted_part in mac_map.values():
-            permuted_part = ":".join(
-                ["%02x" % random.randint(0, 255) for _ in range(3)]
-            )
-
-        # Adjust the first byte to respect the group address property
-        bytes = permuted_part.split(":")
-        first_byte = int(bytes[0], 16)
-        if is_group_address:
-            first_byte |= 0x01  # Set LSB to 1
-        else:
-            first_byte &= 0xFE  # Set LSB to 0
-        bytes[0] = "%02x" % first_byte
-        permuted_part = ":".join(bytes)
-
-        mac_map[mac_part] = permuted_part
-        return permuted_part
+from algorithms import generate_permutation_mac
 
 
 def check_group_address(mac: str) -> bool:
@@ -71,9 +31,13 @@ def anonimize_mac(mac_addr: str, is_group_address=False) -> str:
     manufacturer_addr, device_addr = mac_addr[:8], mac_addr[9:]
 
     mac_result = (
-        generate_permutation_mac(manufacturer_addr, manufacturer_map, is_group_address)
+        generate_permutation_mac(
+            manufacturer_addr, is_group_address, is_device_address=False
+        )
         + ":"
-        + generate_permutation_mac(device_addr, device_map, is_group_address)
+        + generate_permutation_mac(
+            device_addr, is_group_address, is_device_address=True
+        )
     )
 
     return mac_result
@@ -92,7 +56,6 @@ def anon_mac_address(packet: Packet) -> Packet:
         mac_src = packet[Ether].src
         mac_dst = packet[Ether].dst
 
-        # HERE i want to see if the mac address is a group address
         is_group_address_src = check_group_address(mac_src)
         is_group_address_dst = check_group_address(mac_dst)
 
