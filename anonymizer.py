@@ -76,18 +76,21 @@ class PcapAnonymizer:
         It reads the file, anonymizes the packets, and writes the anonymized packets to a new file.
         It also logs system information such as the file name, the number of packets, and the duration of the anonymization process.
         """
-        self.log_system_info()
+        try:
+            self.log_system_info()
 
-        print(f"Beginning anonymization process on {self.path}")
+            print(f"\nBeginning anonymization process on {self.path}")
 
-        key = os.urandom(32)
-        configure_cryptopan(key)
+            key = os.urandom(32)
+            configure_cryptopan(key)
 
-        start_time = time.time()
+            start_time = time.time()
 
-        sniff(offline=self.path, prn=self.anonymize_packet, store=0)
+            sniff(offline=self.path, prn=self.anonymize_packet, store=0)
 
-        end_time = time.time()
-        duration = (end_time - start_time) * 1000  # Duration in milliseconds
-        log.info(f"Anonymization process completed in {duration:.2f} ms")
-        print(f"\nAnonymized file saved to {self.outDir}/{self.outName}")
+            end_time = time.time()
+            duration = (end_time - start_time) * 1000  # Duration in milliseconds
+            log.info(f"Anonymization process completed in {duration:.2f} ms")
+            print(f"Anonymized file saved to {self.outDir}/{self.outName}")
+        except Exception as e:
+            log.error(f"Anonymization process failed: {e}")

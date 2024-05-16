@@ -29,6 +29,9 @@ def main():
         "path", nargs="?", help="Path to the .pcap file to be anonymized."
     )
     group.add_argument("--batch", help="Specify a folder for batch anonymization.")
+    group.add_argument(
+        "--version", "-v", help="Show the version of the tool.", action="store_true"
+    )
 
     parser.add_argument(
         "--outDir",
@@ -43,6 +46,10 @@ def main():
     )
 
     args = parser.parse_args()
+
+    if args.version:
+        print("pcap_blur version 1.0.0")
+        return
 
     if args.batch:
         # Handling batch anonymization for a folder
