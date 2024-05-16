@@ -26,13 +26,13 @@ pip install pcap_blur
 
 2. Install [libpcap](https://www.tcpdump.org/)
 
-Debian/Ubuntu and other Debian based distributions:
+For Debian based distributions:
 
 ```bash
 sudo apt install libpcap-dev
 ```
 
-Fedora/Red Hat based distributions:
+For Fedora/Red Hat based distributions:
 
 ```bash
 sudo yum install libpcap-devel
