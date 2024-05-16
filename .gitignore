@@ -10,9 +10,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.vscode/  
 
 *.pcap
 *.pcapng
+output/
+
 # C extensions
 *.so
 # Distribution / packaging
