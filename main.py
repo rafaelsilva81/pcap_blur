@@ -5,7 +5,7 @@ import signal
 import sys
 
 from anonymizer import PcapAnonymizer
-from utils import change_log_file, initial_logging_config
+from utils import change_log_file, initial_logging_config, validate_anonymization
 
 
 def signal_handler(sig, frame):
@@ -25,12 +25,22 @@ def main():
 
     # Create mutually exclusive group
     group = parser.add_mutually_exclusive_group(required=True)
+
     group.add_argument(
         "path", nargs="?", help="Path to the .pcap file to be anonymized."
     )
+
     group.add_argument("--batch", help="Specify a folder for batch anonymization.")
+
     group.add_argument(
         "--version", "-v", help="Show the version of the tool.", action="store_true"
+    )
+
+    group.add_argument(
+        "--validate",
+        nargs=2,
+        metavar=("first", "second"),
+        help="Validate anonymization by comparing two .pcap files.",
     )
 
     parser.add_argument(
@@ -49,6 +59,20 @@ def main():
 
     if args.version:
         print("pcap_blur version 1.0.0")
+        return
+
+    if args.validate:
+        # Handling validation of two pcap files
+        first_file, second_file = args.validate
+        if not os.path.exists(first_file):
+            print(f"Error: Original file {first_file} does not exist.")
+            return
+
+        if not os.path.exists(second_file):
+            print(f"Error: Anonymized file {second_file} does not exist.")
+            return
+
+        validate_anonymization(first_file, second_file)
         return
 
     if args.batch:
