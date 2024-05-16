@@ -1,5 +1,7 @@
 # Pcap_Blur
 
+### [PT-BR](README_pt.md)
+
 `pcap_blur` is a command line tool for anonymizing network traffic captured in `.pcap` or `.pcapng` files in a simple yet secure way. The main purpose of this tool is to allow anyone to anonymize their own network traffic for research, testing, or educational purposes. The main focus of `pcap_blur` is on anonymization of Internet traffic under the TCP/IP stack.
 
 ## Installation
