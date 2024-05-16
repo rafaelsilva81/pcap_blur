@@ -79,14 +79,14 @@ pcap_blur --validate path/to/original_file.pcap path/to/anonymized_file.pcap
 
 Below is a table with all the command line options available for `pcap_blur`:
 
-| Option                                                   | Description                                                                                       | Default                                |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| `path`                                                   | Path to the capture file to be anonymized.                                                        | None                                   |
-| `--batch`                                                | Specify a folder for batch anonymization.                                                         | None                                   |
-| `--outDir ${directory}`                                  | Set the output directory for the anonymized capture file(s).                                      | `output`                               |
-| `--outName ${filename}`                                  | Set the filename of the anonymized capture file. Can only be used with single file anonymization. | `${original_filename}_anonymized.pcap` |
-| `--version`                                              | Show the version of the tool.                                                                     | None                                   |
-| `--validate ${original_filename} ${anonymized_filename}` | Validate the anonymization of a capture file.                                                     | None                                   |
+| Option                                                   | Description                                                                                       | Default                                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `path`                                                   | Path to the capture file to be anonymized.                                                        | None                                                           |
+| `--batch`                                                | Specify a folder for batch anonymization.                                                         | None                                                           |
+| `--outDir ${directory}`                                  | Set the output directory for the anonymized capture file(s).                                      | `output` or `${original_folder}/output` if used with `--batch` |
+| `--outName ${filename}`                                  | Set the filename of the anonymized capture file. Can only be used with single file anonymization. | `${original_filename}_anonymized.pcap`                         |
+| `--version`                                              | Show the version of the tool.                                                                     | None                                                           |
+| `--validate ${original_filename} ${anonymized_filename}` | Validate the anonymization of a capture file.                                                     | None                                                           |
 
 ## Anonymization Policy
 
