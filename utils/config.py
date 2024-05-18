@@ -1,5 +1,4 @@
-import logging
-
+import picologging as log
 from scapy.all import Packet
 from scapy.layers.inet import IP, TCP
 from scapy.layers.inet6 import IPv6
@@ -21,21 +20,21 @@ def check_checksum(packet: Packet):
         del packet[IP].chksum
         new_checksum = packet[IP].chksum
         if original_checksum != new_checksum:
-            logging.error(f"IP Checksum Invalid for package {packet.summary()}")
+            log.error(f"IP Checksum Invalid for package {packet.summary()}")
 
     if packet.haslayer(IPv6):
         original_checksum = packet[IPv6].chksum
         del packet[IPv6].chksum
         new_checksum = packet[IPv6].chksum
         if original_checksum != new_checksum:
-            logging.error(f"IPv6 Checksum Invalid for package {packet.summary()}")
+            log.error(f"IPv6 Checksum Invalid for package {packet.summary()}")
 
     if packet.haslayer(TCP):
         original_checksum = packet[TCP].chksum
         del packet[TCP].chksum
         new_checksum = packet[TCP].chksum
         if original_checksum != new_checksum:
-            logging.error(f"TCP Checksum Invalid for package {packet.summary()}")
+            log.error(f"TCP Checksum Invalid for package {packet.summary()}")
 
 
 def configure_cryptopan(key: bytes) -> None:
@@ -51,14 +50,14 @@ def configure_cryptopan(key: bytes) -> None:
 
 def initial_logging_config() -> None:
     """
-    This function configures the logging for the original file using the logging module.
+    This function configures the log for the original file using the picologging module.
 
     :param original_filename: Original file name.
     :return: None
     """
-    logging.basicConfig(
+    log.basicConfig(
         filemode="w",
-        level=logging.INFO,
+        level=log.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
@@ -66,23 +65,23 @@ def initial_logging_config() -> None:
 
 def change_log_file(outDir: str, outName: str) -> None:
     """
-    This function changes the logging file for the original file using the logging module.
+    This function changes the logging file for the original file using the picologging module.
 
     :param original_filename: Original file name.
     :return: None
     """
-    logger = logging.getLogger()
+    logger = log.getLogger()
 
     for handler in logger.handlers:
         logger.removeHandler(handler)
         handler.close()
 
-    handler = logging.FileHandler(f"{outDir}/{outName}_log.txt", mode="w")
-    formatter = logging.Formatter(
+    handler = log.FileHandler(f"{outDir}/{outName}_log.txt", mode="w")
+    formatter = log.Formatter(
         "%(asctime)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
     )
 
-    handler.setLevel(logging.INFO)
+    handler.setLevel(log.INFO)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 

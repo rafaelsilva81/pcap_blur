@@ -1,9 +1,9 @@
-import logging as log
 import math
 import os
 import platform
 import time
 
+import picologging as log
 import psutil
 from scapy.all import sniff
 from scapy.utils import PcapWriter
@@ -34,12 +34,12 @@ class PcapAnonymizer:
         """
         This function anonymizes a single packet and returns the anonymized packet.
         """
-        pkt = anon_timestamps(pkt)
-        pkt = anon_port_numbers(pkt)
         pkt = anon_mac_address(pkt)
         pkt = anon_ip_address(pkt)
         pkt = anon_icmp(pkt, self.index)
+        pkt = anon_port_numbers(pkt)
         pkt = anon_app_data(pkt)
+        pkt = anon_timestamps(pkt)
         pkt = recalculate(pkt, self.index)
 
         self.index += 1

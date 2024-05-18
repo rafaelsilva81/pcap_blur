@@ -26,6 +26,7 @@ memory-profiler==0.61.0
 orjson==3.10.3
 packaging==24.0
 pefile==2023.2.7
+picologging==0.9.3
 psutil==5.9.8
 py-spy==0.3.14
 pycparser==2.22

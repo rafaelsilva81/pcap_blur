@@ -1,5 +1,4 @@
-import logging
-
+import picologging as log
 from scapy.all import Packet
 from scapy.contrib.igmp import IGMP
 from scapy.contrib.igmpv3 import IGMPv3
@@ -32,5 +31,5 @@ def recalculate(packet: Packet, index: int) -> Packet:
 
         return packet
     except Exception as e:
-        logging.error(f"Error while recalculating checksum for packet {index}: {e}")
+        log.error(f"Error while recalculating checksum for packet {index}: {e}")
         return packet

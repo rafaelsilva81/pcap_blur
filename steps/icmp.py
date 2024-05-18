@@ -1,5 +1,4 @@
-import logging as log
-
+import picologging as log
 from scapy.all import Packet
 from scapy.layers.inet import ICMP
 from scapy.layers.inet6 import IPv6
