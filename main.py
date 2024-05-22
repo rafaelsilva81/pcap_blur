@@ -5,7 +5,12 @@ import signal
 import sys
 
 from anonymizer import PcapAnonymizer
-from utils import change_log_file, initial_logging_config, validate_anonymization
+from utils import (
+    change_log_file,
+    check_tcpinfo,
+    initial_logging_config,
+    validate_anonymization,
+)
 
 
 def signal_handler(sig, frame):
@@ -43,6 +48,13 @@ def main():
         help="Validate anonymization by comparing two .pcap files.",
     )
 
+    group.add_argument(
+        "--check-tcp",
+        nargs=2,
+        metavar=("first", "second"),
+        help="Check TCP information by comparing two .pcap files.",
+    )
+
     parser.add_argument(
         "--outDir",
         "-o",
@@ -59,6 +71,21 @@ def main():
 
     if args.version:
         print("pcap_blur version 1.0.0")
+        return
+
+    if args.check_tcp:
+        print("Checking TCP information. This can take a while...")
+        # Handling TCP information check for two pcap files
+        first_file, second_file = args.check_tcp
+        if not os.path.exists(first_file):
+            print(f"Error: Original file {first_file} does not exist.")
+            return
+
+        if not os.path.exists(second_file):
+            print(f"Error: Anonymized file {second_file} does not exist.")
+            return
+
+        check_tcpinfo(first_file, second_file)
         return
 
     if args.validate:
@@ -98,7 +125,7 @@ def main():
         )
 
         for pcap_file in pcap_files:
-            out_name = os.path.basename(pcap_file).replace(".pcap", "_anonymized.pcap")
+            out_name = os.path.basename(pcap_file).replace(".pcap", ".anon.pcap")
             change_log_file(out_folder_logs, out_name)
             pcap_anonymizer = PcapAnonymizer(pcap_file, out_folder, out_name)
             pcap_anonymizer.anonymize_file()

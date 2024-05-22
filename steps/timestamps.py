@@ -20,7 +20,7 @@ def precision_degradation(timestamp: EDecimal) -> EDecimal:
 
     timestamp_datetime_local = timestamp_datetime.astimezone(local_tz)
 
-    degraded_datetime_local = timestamp_datetime_local.replace(microsecond=0, second=0)
+    degraded_datetime_local = timestamp_datetime_local.replace(microsecond=0)
 
     degraded_datetime_utc = degraded_datetime_local.astimezone(timezone.utc)
 

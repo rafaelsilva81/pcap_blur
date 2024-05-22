@@ -1,5 +1,6 @@
 # steps/__init__.py
 
+from .check_tcp import check_tcpinfo
 from .config import (
     change_log_file,
     check_checksum,
@@ -18,4 +19,5 @@ __all__ = [
     "get_cryptopan",
     "safe_setattr",
     "validate_anonymization",
+    "check_tcpinfo",
 ]

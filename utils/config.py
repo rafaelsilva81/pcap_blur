@@ -76,7 +76,7 @@ def change_log_file(outDir: str, outName: str) -> None:
         logger.removeHandler(handler)
         handler.close()
 
-    handler = log.FileHandler(f"{outDir}/{outName}_log.txt", mode="w")
+    handler = log.FileHandler(f"{outDir}/{outName}.log.txt", mode="w")
     formatter = log.Formatter(
         "%(asctime)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
     )

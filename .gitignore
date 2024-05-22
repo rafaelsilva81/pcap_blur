@@ -10,11 +10,17 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+performance_tests/
+
 .vscode/  
 
 *.pcap
 *.pcapng
 output/
+*.log.txt
+*.anon.pcap
+
+graph.py
 
 # C extensions
 *.so

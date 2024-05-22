@@ -1,6 +1,0 @@
-2024-05-17 20:47:20 - INFO - Anonymization process started on .\4sics.pcap
-2024-05-17 20:47:20 - INFO - OS: Windows version: 10.0.19045 release: 10
-2024-05-17 20:47:20 - INFO - Machine: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD - 32 GB
-2024-05-17 20:47:20 - INFO - Datetime: 2024-05-17 20:47:20
-2024-05-17 20:47:20 - INFO - Original file size: 209236002 bytes
-2024-05-17 21:27:34 - INFO - Anonymization process completed in 2413126.82 ms
