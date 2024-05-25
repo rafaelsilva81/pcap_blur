@@ -1,4 +1,4 @@
-from scapy.all import Packet, Raw
+from scapy.all import Packet, Padding, Raw
 
 from algorithms import black_marker
 
@@ -12,7 +12,19 @@ def anon_app_data(packet: Packet) -> Packet:
     :return: Anonymized packet.
     """
 
-    if packet.haslayer(Raw):
-        payload_length = len(packet[Raw].load)
-        packet[Raw].load = black_marker(payload_length)
+    # Get the last layer of the packet
+    last_layer = packet.getlayer(packet.layers()[-1])
+
+    # Check if the last layer is a Raw layer
+    if isinstance(last_layer, Raw):
+        # Replace the payload of the Raw layer with a black marker of bytes of zeroes
+        payload_length = len(last_layer.load)
+        last_layer.load = black_marker(payload_length)
+
+    # Check if the last layer is a Padding layer
+    elif isinstance(last_layer, Padding):
+        # Replace the payload of the Padding layer with a black marker of bytes of zeroes
+        payload_length = len(last_layer.load)
+        last_layer.load = black_marker(payload_length)
+
     return packet
