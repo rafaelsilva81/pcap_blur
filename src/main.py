@@ -4,13 +4,14 @@ import os
 import signal
 import sys
 
-from anonymizer import PcapAnonymizer
 from utils import (
     change_log_file,
     check_tcpinfo,
     initial_logging_config,
     validate_anonymization,
 )
+
+from src.anonymizer import PcapAnonymizer
 
 
 def signal_handler(sig, frame):
