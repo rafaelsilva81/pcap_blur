@@ -19,9 +19,9 @@ setup(
     packages=find_packages(),
     entry_points={
         "console_scripts": [
-            "pcap-blur=pcap_blur.main:main",
-            "pcap_blur=pcap_blur.main:main",
-            "pcapblur=pcap_blur.main:main",
+            "pcap-blur=pcap_blur:main",
+            "pcap_blur=pcap_blur:main",
+            "pcapblur=pcap_blur:main",
         ],
     },
     install_requires=requirements,
