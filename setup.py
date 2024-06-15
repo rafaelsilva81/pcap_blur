@@ -8,7 +8,7 @@ with open("README.md") as f:
 
 setup(
     name="pcap_blur",
-    version="0.1.2",
+    version="1.0.0",
     description="Pcap Blur is a command line tool that anonymizes network traffic.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -27,7 +27,7 @@ setup(
     install_requires=requirements,
     python_requires=">=3.10",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
