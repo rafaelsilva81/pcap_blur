@@ -8,7 +8,7 @@ with open("README.md") as f:
 
 setup(
     name="pcap_blur",
-    version="1.0.0",
+    version="2.0.1",
     description="Pcap Blur is a command line tool that anonymizes network traffic.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -17,6 +17,7 @@ setup(
     author_email="rafaelgaldinosilva81@gmail.com",
     license="MIT",
     packages=find_packages(),
+    py_modules=["pcap_blur", "anonymizer"],  # Since pcap_blur.py is in the root
     entry_points={
         "console_scripts": [
             "pcap-blur=pcap_blur:main",
